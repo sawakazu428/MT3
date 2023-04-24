@@ -2,6 +2,20 @@
 
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
+// 1.行列の加法
+Matrix4x4 Add
+
+// 2.行列の減法
+
+// 3.行列の積
+
+// 4.逆行列
+
+// 5.転置行列
+
+// 6.単位行列の作成
+
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
