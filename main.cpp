@@ -115,9 +115,9 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 Matrix4x4 Inverse(const Matrix4x4& m)
 {
 	Matrix4x4 result;
-	result.m[0][0] = m.m[1][1] * m.m[2][2] * m.m[3][3] + m.m[1][2] * m.m[2][3] * m.m[3][1] +
+	result.m[0][0] = (m.m[1][1] * m.m[2][2] * m.m[3][3] + m.m[1][2] * m.m[2][3] * m.m[3][1] +
 		m.m[1][3] * m.m[2][1] * m.m[3][2] - m.m[1][3] * m.m[2][2] * m.m[3][1] -
-		m.m[1][2] * m.m[2][1] * m.m[3][3] - m.m[1][1] * m.m[2][3] * m.m[3][2];
+		m.m[1][2] * m.m[2][1] * m.m[3][3] - m.m[1][1] * m.m[2][3] * m.m[3][2]);
 
 	result.m[0][1] = -m.m[0][1] * m.m[2][2] * m.m[3][3] - m.m[0][2] * m.m[2][3] * m.m[3][1] -
 		m.m[0][3] * m.m[2][1] * m.m[3][2] + m.m[0][3] * m.m[2][2] * m.m[3][1] +
@@ -277,14 +277,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		MatrixScreenPrintf(0, 0, resultAdd );
-		MatrixScreenPrintf(0, kRowHeight * 5, resultSubtract);
-		MatrixScreenPrintf(0, kRowHeight * 5 * 2,resultMultiply);
-		MatrixScreenPrintf(0, kRowHeight * 5 * 3, inverseM1);
-		MatrixScreenPrintf(0, kRowHeight * 5 * 4, inverseM2);
-		MatrixScreenPrintf(kColumnWidth * 5, 0, transposeM1);
-		MatrixScreenPrintf(kColumnWidth * 5,kRowHeight*5, transposeM2);
-		MatrixScreenPrintf(kColumnWidth * 5, kRowHeight * 5 * 2, identity);
+		Novice::ScreenPrintf(0, 0, "Add");
+		MatrixScreenPrintf(0, 20, resultAdd );
+		Novice::ScreenPrintf(0, kRowHeight * 5, "Subtract");
+		MatrixScreenPrintf(0, kRowHeight * 5 + 20, resultSubtract);
+		Novice::ScreenPrintf(0, kRowHeight * 5 * 2, "Multiply");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 2 +20,resultMultiply);
+		Novice::ScreenPrintf(0, kRowHeight * 5 * 3, "inverseM1");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 3 + 20, inverseM1);
+		Novice::ScreenPrintf(0, kRowHeight * 5 * 4, "inverseM2");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 4 + 20, inverseM2);
+
+		Novice::ScreenPrintf(60 * 6, 0, "transposeM1");
+		MatrixScreenPrintf(kColumnWidth * 6, 20, transposeM1);
+		Novice::ScreenPrintf(kColumnWidth * 6, kRowHeight * 5, "transPoseM2");
+		MatrixScreenPrintf(kColumnWidth * 6,kRowHeight*5 + 20, transposeM2);
+		Novice::ScreenPrintf(kColumnWidth * 6, kRowHeight * 5 * 2, "identity");
+		MatrixScreenPrintf(kColumnWidth * 6, kRowHeight * 5 * 2 + 20, identity);
 
 		///
 		/// ↑描画処理ここまで
