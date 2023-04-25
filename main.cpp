@@ -5,16 +5,6 @@ const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
 
-void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix) {
-	for (int row = 0; row < 4; ++row)
-	{
-		for (int column = 0; column < 4; ++column)
-		{
-			Novice::ScreenPrintf(
-				x + column * kColumnWidth, y + row * kRowHeight, "%6.02f", matrix.m[row][column]);
-		}
-	}
-}
 
 // 1.行列の加法
 Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
@@ -68,10 +58,10 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	result.m[0][1] = m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1]
 		+ m1.m[0][2] * m2.m[2][1] + m1.m[0][3] * m2.m[3][1];
 
-	result.m[0][2] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][2]
+	result.m[0][2] = m1.m[0][0] * m2.m[0][2] + m1.m[0][1] * m2.m[1][2]
 		+ m1.m[0][2] * m2.m[2][2] + m1.m[0][3] * m2.m[3][2];
 
-	result.m[0][3] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][3]
+	result.m[0][3] = m1.m[0][0] * m2.m[0][3] + m1.m[0][1] * m2.m[1][3]
 		+ m1.m[0][2] * m2.m[2][3] + m1.m[0][3] * m2.m[3][3];
 
 	result.m[1][0] = m1.m[1][0] * m2.m[0][0] + m1.m[1][1] * m2.m[1][0]
@@ -99,7 +89,7 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 		+ m1.m[2][2] * m2.m[2][3] + m1.m[2][3] * m2.m[3][3];
 
 	result.m[3][0] = m1.m[3][0] * m2.m[0][0] + m1.m[3][1] * m2.m[1][0]
-		+ m1.m[3][2] * m2.m[2][1] + m1.m[3][3] * m2.m[3][0];
+		+ m1.m[3][2] * m2.m[2][0] + m1.m[3][3] * m2.m[3][0];
 
 	result.m[3][1] = m1.m[3][0] * m2.m[0][1] + m1.m[3][1] * m2.m[1][1]
 		+ m1.m[3][2] * m2.m[2][1] + m1.m[3][3] * m2.m[3][1];
@@ -227,6 +217,16 @@ Matrix4x4 MakeIdentity4x4()
 	result.m[3][3] = 1.0f;
 	return result;
 };
+void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix) {
+	for (int row = 0; row < 4; ++row)
+	{
+		for (int column = 0; column < 4; ++column)
+		{
+			Novice::ScreenPrintf(
+				x + column * kColumnWidth, y + row * kRowHeight, "%6.02f", matrix.m[row][column]);
+		}
+	}
+}
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
