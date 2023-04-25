@@ -11,15 +11,46 @@ struct Vector3 {
 // 1. X軸回転行列
 Matrix4x4 MakeRotateXMatrix(float radian)
 {
+	float cos = std::cosf(radian);
+	float sin = std::sinf(radian);
 	Matrix4x4 result;
-	result.m[0][0] = 
-}
+	result = {
+		1.0f,0.0f,0.0f,0.0f,
+		0.0f,cos,sin,0.0f,
+		0.0f,-sin,cos,0.0f,
+		0.0f,0.0f,0.0f,1.0f
+	};
+};
 
 // 2, Y軸回転移動
-Matrix4x4 MakeRotateYMatrix(float radian);
+Matrix4x4 MakeRotateYMatrix(float radian)
+{
+	float cos = std::cosf(radian);
+	float sin = std::sinf(radian);
+	Matrix4x4 result;
+	result = {
+		cos,0.0f,-sin,0.0f,
+		0.0f,1.0f,0.0f,0.0f,
+		sin,0.0f,cos,0.0f,
+		0.0f,0.0f,0.0f,1.0f
+	};
+};
 
 // 3. Z軸回転移動
-Matrix4x4 MakeRotateZMatrix(float radian);
+Matrix4x4 MakeRotateZMatrix(float radian)
+{
+	float cos = std::cosf(radian);
+	float sin = std::sinf(radian);
+	Matrix4x4 result;
+	result = {
+		cos,sin,0.0f,0.0f,
+		-sin,cos,0.0f,0.0f,
+		0.0f,0.0f,1.0f,0.0f,
+		0.0f,0.0f,0.0f,1.0f
+	};
+};
+
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -30,9 +61,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 	Vector3 rotate{ 0.4f,1.43f,-0.8f };
-	cosf(radian);
-	std::cosf(radian);
 
+
+Matrix4x4 rotateMatrix = Multiply(rotate.x, Mutiply(rotate.y, rotate.z));
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
