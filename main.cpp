@@ -1,6 +1,12 @@
 #include <Novice.h>
+#include "Matrix4x4.h"
 
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
+
+Matrix4x4 MakeTranslate(const Vector3& translate)
+{
+
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
