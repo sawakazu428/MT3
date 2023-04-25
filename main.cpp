@@ -3,11 +3,26 @@
 
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
-Matrix4x4 MakeTranslate(const Vector3& translate)
+struct Vector3
+{
+	float x, y, z;
+};
+
+Matrix4x4 MakeTranslateMatrix(const Vector3& translate)
 {
 
-}
+};
 
+Matrix4x4 MakeScaleMatrix(const Vector3& scale)
+{
+
+
+};
+
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
+{
+
+};
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -18,6 +33,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
+	Vector3 translate{ 4.1f,2.6f,0.8f };
+	Vector3 scale{ 1.5f,5.2f,7.3f };
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+	Vector3 point{ 2.3f,3.8f,1.4f };
+	Matrix4x4 transformMatrix = {
+		1.0f,2.0f,3.0f,4.0f,
+		3.0f,1.0f,1.0f,2.0f,
+		1.0f,4.0f,2.0f,3.0f,
+		2.0f,2.0f,1.0f,3.0f
+	};
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -31,6 +57,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+	Vector3 transformed = Transform(point, transformMatrix);
 		///
 		/// ↑更新処理ここまで
 		///
@@ -38,6 +65,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+
+
 
 		///
 		/// ↑描画処理ここまで
