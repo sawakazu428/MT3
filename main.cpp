@@ -7,6 +7,8 @@ struct Vector3 {
 	float y;
 	float z;
 };
+static const int kRowHeight = 20;
+static const int kColumnWidth = 60;
 
 // 1. X軸回転行列
 Matrix4x4 MakeRotateXMatrix(float radian)
@@ -20,6 +22,7 @@ Matrix4x4 MakeRotateXMatrix(float radian)
 		0.0f,-sin,cos,0.0f,
 		0.0f,0.0f,0.0f,1.0f
 	};
+	return result;
 };
 
 // 2, Y軸回転移動
@@ -34,6 +37,7 @@ Matrix4x4 MakeRotateYMatrix(float radian)
 		sin,0.0f,cos,0.0f,
 		0.0f,0.0f,0.0f,1.0f
 	};
+	return result;
 };
 
 // 3. Z軸回転移動
@@ -48,6 +52,7 @@ Matrix4x4 MakeRotateZMatrix(float radian)
 		0.0f,0.0f,1.0f,0.0f,
 		0.0f,0.0f,0.0f,1.0f
 	};
+	return result;
 };
 
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
@@ -142,7 +147,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 rotateYMatrix = MakeRotateXMatrix(rotate.y);
 		Matrix4x4 rotateZMatrix = MakeRotateXMatrix(rotate.z);
 
-		Matrix4x4 rotateMatrixXYZ = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
+		Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
 
 		///
 		/// ↑更新処理ここまで
@@ -153,12 +158,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		Novice::ScreenPrintf(0, 0, "rotateXMatrix");
 		MatrixScreenPrintf(0, 20, rotateXMatrix);
-		Novice::ScreenPrintf(0, , "rotateYMatrix");
-		MatrixScreenPrintf(0, 20, rotateXMatrix);
-		Novice::ScreenPrintf(0, 0, "rotateZMatrix");
-		MatrixScreenPrintf(0, 20, rotateXMatrix);
-		Novice::ScreenPrintf(0, 0, "rotateXYZMatrix");
-		MatrixScreenPrintf(0, 20, rotateXMatrix);
+		Novice::ScreenPrintf(0, kRowHeight * 5, "rotateYMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5 + 20, rotateYMatrix);
+		Novice::ScreenPrintf(0, kRowHeight * 5 * 2, "rotateZMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 2 + 20, rotateZMatrix);
+		Novice::ScreenPrintf(0, kRowHeight * 5 * 3, "rotateXYZMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 3 + 20, rotateXYZMatrix);
 
 
 		///
