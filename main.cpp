@@ -112,10 +112,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
-	Vector3 rotate{ 0.4f,1.43f,-0.8f };
-	float rotateX = MakeRotateXMatrix(radian);
 
-Matrix4x4 rotateMatrix = Multiply(rotate.x, Multiply(rotate.y, rotate.z));
+		
+	Vector3 rotate{ 0.4f,1.43f,-0.8f };
+
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -129,6 +129,11 @@ Matrix4x4 rotateMatrix = Multiply(rotate.x, Multiply(rotate.y, rotate.z));
 		///
 		/// ↓更新処理ここから
 		///
+		Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);	
+		Matrix4x4 rotateYMatrix = MakeRotateXMatrix(rotate.y);
+		Matrix4x4 rotateZMatrix = MakeRotateXMatrix(rotate.z);
+
+		Matrix4x4 rotateMatrixXYZ = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
 
 		///
 		/// ↑更新処理ここまで
@@ -137,6 +142,8 @@ Matrix4x4 rotateMatrix = Multiply(rotate.x, Multiply(rotate.y, rotate.z));
 		///
 		/// ↓描画処理ここから
 		///
+
+		
 
 		///
 		/// ↑描画処理ここまで
