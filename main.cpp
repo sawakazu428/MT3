@@ -102,7 +102,16 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-
+void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix) {
+	for (int row = 0; row < 4; ++row)
+	{
+		for (int column = 0; column < 4; ++column)
+		{
+			Novice::ScreenPrintf(
+				x + column * kColumnWidth, y + row * kRowHeight, "%6.02f", matrix.m[row][column]);
+		}
+	}
+}
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -142,8 +151,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+		Novice::ScreenPrintf(0, 0, "rotateXMatrix");
+		MatrixScreenPrintf(0, 20, rotateXMatrix);
+		Novice::ScreenPrintf(0, , "rotateYMatrix");
+		MatrixScreenPrintf(0, 20, rotateXMatrix);
+		Novice::ScreenPrintf(0, 0, "rotateZMatrix");
+		MatrixScreenPrintf(0, 20, rotateXMatrix);
+		Novice::ScreenPrintf(0, 0, "rotateXYZMatrix");
+		MatrixScreenPrintf(0, 20, rotateXMatrix);
 
-		
 
 		///
 		/// ↑描画処理ここまで
