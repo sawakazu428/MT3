@@ -10,10 +10,8 @@ const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
 {
 	Matrix4x4 result;
-	float theta = 3.14f;
-
-	float tan = std::tanf(theta);
-	float cot = 1.0f / tan;
+	//float theta = 3.14f;
+	float cot = 1.0f / aspectRatio;
 
 	result = {
 		cot / aspectRatio * (fovY / 2), 0.0f, 0.0f, 0.0f,
