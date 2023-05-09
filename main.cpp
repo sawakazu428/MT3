@@ -1,12 +1,17 @@
 #include <Novice.h>
 #include "Matrix4x4.h"
-
+#include "cmath"
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
+
+
 
 
 // 1. 透視投影行列
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
 {
+	Matrix4x4 result;
+	float tan = 
+	float cot = 1.0f / tan
 
 };
 
@@ -21,6 +26,20 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 {
 
 };
+
+static const int kRowHeight = 20;
+static const int kColumnWidth = 60;
+
+void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix) {
+	for (int row = 0; row < 4; ++row)
+	{
+		for (int column = 0; column < 4; ++column)
+		{
+			Novice::ScreenPrintf(
+				x + column * kColumnWidth, y + row * kRowHeight, "%6.02f", matrix.m[row][column]);
+		}
+	}
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
