@@ -10,21 +10,44 @@ const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
 {
 	Matrix4x4 result;
-	float tan = std::tanf()
-	float cot = 1.0f / tan
+	//float theta = 3.14f;
 
+	float tan = std::tanf(farClip);
+	float cot = 1.0f / tan;
+
+	result = {
+		cot / aspectRatio * (fovY / 2), 0.0f, 0.0f, 0.0f,
+		0.0f, cot * (fovY / 2), 0.0f, 0.0f,
+		0.0f, 0.0f, farClip / (farClip - nearClip), 1.0f,
+		0.0f, 0.0f, (-nearClip * farClip) / (farClip - nearClip),0.0f
+	};
+	return result;
 };
 
 // 2. 正射影行列
 Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip)
 {
-
+	Matrix4x4 result;
+	result = {
+		2.0f / (right - left), 0.0f, 0.0f, 0.0f,
+		0.0f, 2.0f / (top - bottom), 0.0f ,0.0f,
+		0.0f, 0.0f, 1.0f / (farClip - nearClip), 0.0f,
+		(left + right) / (left - right),  (top + bottom) / (bottom - top), nearClip / (nearClip - farClip), 1.0f
+	};
+	return result;
 };
 
 // 3. ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)
 {
-
+	Matrix4x4 result;
+	result = {
+		width / 2.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, -height / 2.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, maxDepth - minDepth, 0.0f,
+		left + (width / 2.0f), top + (height / 2.0f), minDepth ,1.0f
+	};
+	return result;
 };
 
 static const int kRowHeight = 20;
@@ -80,6 +103,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+
+		MatrixScreenPrintf(0, 0, orthographicMatrix);
+
+		MatrixScreenPrintf(0, kRowHeight * 5, perspectiveFovMatirx);
+
+		MatrixScreenPrintf(0, kRowHeight * 10, viewportMatrix);
 
 		///
 		/// ↑描画処理ここまで
