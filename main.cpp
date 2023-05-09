@@ -11,7 +11,7 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 {
 	Matrix4x4 result;
 	//float theta = 3.14f;
-	float cot = 1.0f / aspectRatio;
+	float cot = 1.0f / aspectRatio;	
 
 	result = {
 		cot / aspectRatio * (fovY / 2), 0.0f, 0.0f, 0.0f,
