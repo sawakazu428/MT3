@@ -101,66 +101,48 @@ Matrix4x4 MakeRotateZMatrix(float radian)
 	return result;
 };
 
+Matrix4x4& operator*=(Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 result = {};
+	for (size_t i = 0; i < 4; i++) {
+		for (size_t j = 0; j < 4; j++) {
+			for (size_t k = 0; k < 4; k++) {
+				result.m[i][j] += m1.m[i][k] * m2.m[k][j];
+			}
+		}
+	}
 
-Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
+	m1 = result;
+	return m1;
+}
 
-	Matrix4x4 result;
-	result.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] + m1.m[0][3] * m2.m[3][0];
-	result.m[0][1] = m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1] + m1.m[0][2] * m2.m[2][1] + m1.m[0][3] * m2.m[3][1];
-	result.m[0][2] = m1.m[0][0] * m2.m[0][2] + m1.m[0][1] * m2.m[1][2] + m1.m[0][2] * m2.m[2][2] + m1.m[0][3] * m2.m[3][2];
-	result.m[0][3] = m1.m[0][0] * m2.m[0][3] + m1.m[0][1] * m2.m[1][3] + m1.m[0][2] * m2.m[2][3] + m1.m[0][3] * m2.m[3][3];
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 result = m1;
 
-	result.m[1][0] = m1.m[1][0] * m2.m[0][0] + m1.m[1][1] * m2.m[1][0] + m1.m[1][2] * m2.m[2][0] + m1.m[1][3] * m2.m[3][0];
-
-	result.m[1][1] = m1.m[1][0] * m2.m[0][1] + m1.m[1][1] * m2.m[1][1]
-		+ m1.m[1][2] * m2.m[2][1] + m1.m[1][3] * m2.m[3][1];
-
-	result.m[1][2] = m1.m[1][0] * m2.m[0][2] + m1.m[1][1] * m2.m[1][2]
-		+ m1.m[1][2] * m2.m[2][2] + m1.m[1][3] * m2.m[3][2];
-
-	result.m[1][3] = m1.m[1][0] * m2.m[0][3] + m1.m[1][1] * m2.m[1][3]
-		+ m1.m[1][2] * m2.m[2][3] + m1.m[1][3] * m2.m[3][3];
-
-	result.m[2][0] = m1.m[2][0] * m2.m[0][0] + m1.m[2][1] * m2.m[1][0]
-		+ m1.m[2][2] * m2.m[2][0] + m1.m[2][3] * m2.m[3][0];
-
-	result.m[2][1] = m1.m[2][0] * m2.m[0][1] + m1.m[2][1] * m2.m[1][1]
-		+ m1.m[2][2] * m2.m[2][1] + m1.m[2][3] * m2.m[3][1];
-
-	result.m[2][2] = m1.m[2][0] * m2.m[0][2] + m1.m[2][1] * m2.m[1][2]
-		+ m1.m[2][2] * m2.m[2][2] + m1.m[2][3] * m2.m[3][2];
-
-	result.m[2][3] = m1.m[2][0] * m2.m[0][3] + m1.m[2][1] * m2.m[1][3]
-		+ m1.m[2][2] * m2.m[2][3] + m1.m[2][3] * m2.m[3][3];
-
-	result.m[3][0] = m1.m[3][0] * m2.m[0][0] + m1.m[3][1] * m2.m[1][0]
-		+ m1.m[3][2] * m2.m[2][0] + m1.m[3][3] * m2.m[3][0];
-
-	result.m[3][1] = m1.m[3][0] * m2.m[0][1] + m1.m[3][1] * m2.m[1][1]
-		+ m1.m[3][2] * m2.m[2][1] + m1.m[3][3] * m2.m[3][1];
-
-	result.m[3][2] = m1.m[3][0] * m2.m[0][2] + m1.m[3][1] * m2.m[1][2]
-		+ m1.m[3][2] * m2.m[2][2] + m1.m[3][3] * m2.m[3][2];
-
-	result.m[3][3] = m1.m[3][0] * m2.m[0][3] + m1.m[3][1] * m2.m[1][3]
-		+ m1.m[3][2] * m2.m[2][3] + m1.m[3][3] * m2.m[3][3];
-	return result;
+	return result *= m2;
 }
 
 // 3次元アフィン変換行列
-Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate)
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vector3& translate)
 {
-	Matrix4x4 result;
+	// スケーリング行列
+	Matrix4x4 matScale = MakeScaleMatrix(scale);
 
-	result = {
-		scale.x * rotate.m[0][0] ,scale.x * rotate.m[0][1] ,scale.x * rotate.m[0][2] ,0.0f,
-		scale.y * rotate.m[1][0] ,scale.y * rotate.m[1][1] ,scale.y * rotate.m[1][2] ,0.0f,
-		scale.z * rotate.m[2][0] ,scale.z * rotate.m[2][1] ,scale.z * rotate.m[2][2] ,0.0f,
-		translate.x ,translate.y ,translate.z ,1.0f
-	};
+	// 回転行列
+	Matrix4x4 matRotX = MakeRotateXMatrix(rot.x);
+	Matrix4x4 matRotY = MakeRotateYMatrix(rot.y);
+	Matrix4x4 matRotZ = MakeRotateZMatrix(rot.z);
+
+	// 合成(X*Y*Z)
+	Matrix4x4 matRot = matRotX * matRotY * matRotZ;
+
+	// 平行移動行列
+	Matrix4x4 matTrans = MakeTranslateMatrix(translate);
+
+	// 合成
+	Matrix4x4 result = matScale * matRot * matTrans;
+
 	return result;
-
-}
+};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -176,14 +158,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 rotate{ 0.4f,1.43f,-0.8f };
 	Vector3 translate{ 2.7f,-4.15f,1.57f };
 
-	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
-	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
-	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
-
-	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
-
-
-	Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotateXYZMatrix, translate);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -197,6 +171,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
+	Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
 
 		///
 		/// ↑更新処理ここまで
