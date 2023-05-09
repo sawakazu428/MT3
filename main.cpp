@@ -1,6 +1,7 @@
 #include <Novice.h>
 #include "Matrix4x4.h"
 #include "cassert"
+#include "cmath"
 
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
@@ -100,19 +101,20 @@ Matrix4x4 MakeRotateZMatrix(float radian)
 	return result;
 };
 
-Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
 {
-	Vector3 result; // w=1がデカルト座標系であるので(x,y,1)のベクトルとしてmatrixとの積をとる
-	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
-	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
-	result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + 1.0f * matrix.m[3][2];
-	float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + 1.0f * matrix.m[3][3];
-	assert(w != 0.0f); // ベクトルに対して基本的な操作を行う行列でwが0になることはありえない
-	result.x /= w; // w=1がデカルト座標系であるので、wを除算することで同次座標をデカルト座標に戻す
-	result.y /= w;
-	result.z /= w;
+	Matrix4x4 result;
+
+	result = {
+		scale.x * ,0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f,0.0f,
+		0.0f,0.0f,1.0f,0.0f,
+		translate.x,translate.y,translate.z,1.0f
+	};
 	return result;
-};
+
+}
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -123,17 +125,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	Vector3 translate{ 4.1f,2.6f,0.8f };
-	Vector3 scale{ 1.5f,5.2f,7.3f };
-	Vector3 point{ 2.3f,3.8f,1.4f };
-	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
-	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
-	Matrix4x4 transformMatrix = {
-		1.0f,2.0f,3.0f,4.0f,
-		3.0f,1.0f,1.0f,2.0f,
-		1.0f,4.0f,2.0f,3.0f,
-		2.0f,2.0f,1.0f,3.0f
-	};
+	Vector3 scale{ 1.2f,0.79f,-2.1f };
+	Vector3 rotate{ 0.4f,1.43f,-0.8f };
+	Vector3 translate{ 2.7f,-4.15f,1.57f };
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -147,7 +141,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-	Vector3 transformed = Transform(point, transformMatrix);
+	Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
 		///
 		/// ↑更新処理ここまで
 		///
@@ -155,11 +149,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-	VectorScreenPrintf(0, 0, transformed, "transformed");
-	MatrixScreenPrintf(0, 40, translateMatrix);
-	MatrixScreenPrintf(0, kRowHeight * 7, scaleMatrix);
 
-
+	MatrixScreenPrintf(0, 0, worldMatrix);
 		///
 		/// ↑描画処理ここまで
 		///
