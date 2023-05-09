@@ -11,11 +11,12 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 {
 	Matrix4x4 result;
 	//float theta = 3.14f;
-	float cot = 1.0f / aspectRatio;	
+	float tan = std::tanf(fovY / 2);
+	float cot = 1.0f / tan;	
 
 	result = {
-		cot / aspectRatio * (fovY / 2), 0.0f, 0.0f, 0.0f,
-		0.0f, cot * (fovY / 2), 0.0f, 0.0f,
+		1.0f / aspectRatio * cot, 0.0f, 0.0f, 0.0f,
+		0.0f, cot, 0.0f, 0.0f,
 		0.0f, 0.0f, farClip / (farClip - nearClip), 1.0f,
 		0.0f, 0.0f, (-nearClip * farClip) / (farClip - nearClip),0.0f
 	};
