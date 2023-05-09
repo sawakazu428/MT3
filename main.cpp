@@ -147,15 +147,16 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
+// 3次元アフィン変換行列
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate)
 {
 	Matrix4x4 result;
 
 	result = {
-		scale.x * rotate.m[0][0],scale.x * rotate.m[0][1],scale.x * rotate.m[0][2],0.0f,
-		scale.y * rotate.m[1][0],scale.y * rotate.m[1][1],scale.y * rotate.m[1][2],0.0f,
-		scale.z * rotate.m[2][0],scale.z * rotate.m[2][1],scale.z * rotate.m[2][2],0.0f,
-		translate.x,translate.y,translate.z,1.0f
+		scale.x * rotate.m[0][0] ,scale.x * rotate.m[0][1] ,scale.x * rotate.m[0][2] ,0.0f,
+		scale.y * rotate.m[1][0] ,scale.y * rotate.m[1][1] ,scale.y * rotate.m[1][2] ,0.0f,
+		scale.z * rotate.m[2][0] ,scale.z * rotate.m[2][1] ,scale.z * rotate.m[2][2] ,0.0f,
+		translate.x ,translate.y ,translate.z ,1.0f
 	};
 	return result;
 
