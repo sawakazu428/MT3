@@ -7,8 +7,15 @@ const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 Vector3 Cross(const Vector3& v1, const Vector3& v2)
 {
 	Vector3 result;
-	result = (v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+	result = { v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 	return result;
+};
+
+Vector3 rotate{};
+
+Vector3 translate
+{
+
 };
 
 // スケーリング行列の作成	
@@ -153,8 +160,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 	Vector3 cross = Cross(v1, v2);
 
-		Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f }, 0.0f, cameraPosition);
-		Matrix4x4 viewMatrix = Invarse(cameraMatrix);
+	Matrix4x4 worldMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, rotate, translate);
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },{ 0.0f,0.0f,0.0f }, translate);
+	Matrix4x4 viewMatrix = Invarse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix();
+
+
 
 		///
 		/// ↑更新処理ここまで
