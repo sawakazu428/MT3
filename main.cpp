@@ -349,10 +349,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
 	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f,float(kWindowWidth) /float(kWindowHeight),0.1f,100.0f);
+	// WVPMatrixを作る
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	// ViewportMatrixを作る 
 	Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+	// Screen空間へと頂点を変換する
 	for (uint32_t i = 0; i < 3; ++i)
 	{
+		// NDCまで変換。Transformを使うと
 		Vector3 ndcVertex = Transform(kLocalVerticles[i],worldViewProjectionMatrix);
 		screenVerticles[i] = Transform(ndcVertex, viewportMatrix);
 	}
