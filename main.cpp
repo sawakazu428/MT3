@@ -4,6 +4,13 @@
 #include "cmath"
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
+Vector3 Cross(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 result;
+	result = (v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+	return result;
+};
+
 // スケーリング行列の作成	
 Matrix4x4 MakeScaleMatrix(const Vector3& scale)
 {
@@ -129,6 +136,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
+	Vector3 v1{ 1.2f,-3.9f,2.5f };
+	Vector3 v2{ 2.8f,0.4f,-1.3f };
+
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -141,6 +151,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
+	Vector3 cross = Cross(v1, v2);
+
+		Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f }, 0.0f, cameraPosition);
+		Matrix4x4 viewMatrix = Invarse(cameraMatrix);
 
 		///
 		/// ↑更新処理ここまで
