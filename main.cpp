@@ -1,5 +1,7 @@
 #include <Novice.h>
-
+#include "Matrix4x4.h"
+#include "Vector3.h"
+#include "cmath"
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
 // スケーリング行列の作成	
