@@ -5,20 +5,15 @@
 #include "cassert"
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
+static const int kWindowHeight = 720;
+static const int kWindowWidth = 1280;
+
 Vector3 Cross(const Vector3& v1, const Vector3& v2)
 {
 	Vector3 result;
 	result = { v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 	return result;
 };
-
-Vector3 rotate{};
-
-Vector3 translate
-{
-
-};
-
 
 // スケーリング行列の作成	
 Matrix4x4 MakeScaleMatrix(const Vector3& scale)
@@ -305,8 +300,7 @@ Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
-Novice:
-	:Initialize(kWindowTitle, 1280, 720);
+Novice::Initialize(kWindowTitle, 1280, 720);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
@@ -314,7 +308,11 @@ Novice:
 
 	Vector3 v1{ 1.2f,-3.9f,2.5f };
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
+	Vector3 rotate{};
+	Vector3 translate
+	{1.0f,1.0f,1.0f	};
 
+	Vector3 cameraPosition = { 480.0f,200.0f,100.0f };
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -328,18 +326,18 @@ Novice:
 		/// ↓更新処理ここから
 		///
 	Vector3 cross = Cross(v1, v2);
-
 	Matrix4x4 worldMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, rotate, translate);
-	Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },{ 0.0f,0.0f,0.0f }, translate);
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f,float);
-	Matrix4x4 worldViewProjectionMatrix = Multiply();
-	Matrix4x4 viewportMatrix = MakeViewportMatrix();
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f,float(kWindowWidth) /float(kWindowHeight),0.1f,100.0f);
+	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+	Vector3 kLocalVerticles[3];
 	Vector3 screenVerticles[3];
 	for (uint32_t i = 0; i < 3; ++i)
 	{
-		Vector3 ndcVertex = Transform();
-		screenVerticles[i] = Transform();
+		Vector3 ndcVertex = Transform(kLocalVerticles[i],worldViewProjectionMatrix);
+		screenVerticles[i] = Transform(ndcVertex, viewportMatrix);
 	}
 
 
