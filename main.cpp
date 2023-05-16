@@ -311,18 +311,26 @@ Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
-Novice::Initialize(kWindowTitle, 1280, 720);
+	Novice::Initialize(kWindowTitle, 1280, 720);
 
 	// キー入力結果を受け取る箱
-	char keys[256] = {0};
-	char preKeys[256] = {0};
+	char keys[256] = { 0 };
+	char preKeys[256] = { 0 };
 
 	Vector3 v1{ 1.2f,-3.9f,2.5f };
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
 	Vector3 rotate{};
 	Vector3 translate{};
+	Vector3 kLocalVerticles[3]
+	{
+	{ 0.0f,10.0f,5.0f },
+	{ -5.0f,0.0f,0.0f },
+	{ -10.0f,-10.0f,-5.0f },
 
-	Vector3 cameraPosition = { 480.0f,200.0f,100.0f };
+	};
+
+	Vector3 screenVerticles[3];
+	Vector3 cameraPosition = { 0.0f,0.0f,10.0f };
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -343,8 +351,6 @@ Novice::Initialize(kWindowTitle, 1280, 720);
 	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f,float(kWindowWidth) /float(kWindowHeight),0.1f,100.0f);
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 	Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
-	Vector3 kLocalVerticles[3];
-	Vector3 screenVerticles[3];
 	for (uint32_t i = 0; i < 3; ++i)
 	{
 		Vector3 ndcVertex = Transform(kLocalVerticles[i],worldViewProjectionMatrix);
