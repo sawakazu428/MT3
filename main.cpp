@@ -132,12 +132,55 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vecto
 	return result;
 };
 
+// 1. 透視投影行列
+Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
+{
+	Matrix4x4 result;
+	//float theta = 3.14f;
+	float tan = std::tanf(fovY / 2);
+	float cot = 1.0f / tan;
+
+	result = {
+		1.0f / aspectRatio * cot, 0.0f, 0.0f, 0.0f,
+		0.0f, cot, 0.0f, 0.0f,
+		0.0f, 0.0f, farClip / (farClip - nearClip), 1.0f,
+		0.0f, 0.0f, (-nearClip * farClip) / (farClip - nearClip),0.0f
+	};
+	return result;
+};
+
+// 2. 正射影行列
+Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip)
+{
+	Matrix4x4 result;
+	result = {
+		2.0f / (right - left), 0.0f, 0.0f, 0.0f,
+		0.0f, 2.0f / (top - bottom), 0.0f ,0.0f,
+		0.0f, 0.0f, 1.0f / (farClip - nearClip), 0.0f,
+		(left + right) / (left - right),  (top + bottom) / (bottom - top), nearClip / (nearClip - farClip), 1.0f
+	};
+	return result;
+};
+
+// 3. ビューポート変換行列
+Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)
+{
+	Matrix4x4 result;
+	result = {
+		width / 2.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, -height / 2.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, maxDepth - minDepth, 0.0f,
+		left + (width / 2.0f), top + (height / 2.0f), minDepth ,1.0f
+	};
+	return result;
+};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
-	Novice::Initialize(kWindowTitle, 1280, 720);
+Novice:
+	:Initialize(kWindowTitle, 1280, 720);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
@@ -164,6 +207,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f },{ 0.0f,0.0f,0.0f }, translate);
 	Matrix4x4 viewMatrix = Invarse(cameraMatrix);
 	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix();
+	Matrix4x4 worldViewProjectionMatrix = Multiply();
+	Matrix4x4 viewportMatrix = MakeViewportMatrix();
+	Vector3 screenVerticles[3];
+	for (uint32_t i = 0; i < 3; ++i)
+	{
+		Vector3 ndcVertex = Transform();
+		screenVerticles[i] = Transform();
+	}
 
 
 
@@ -174,6 +225,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+
+	Novice::DrawTriangle(int(screenVerticles[0].x), int(screenVerticles[0].y), int(screenVerticles[1].x), int(screenVerticles[1].y),
+		int(screenVerticles[2].x), int(screenVerticles[2].y), RED, kFillModeSolid);
 
 		///
 		/// ↑描画処理ここまで
