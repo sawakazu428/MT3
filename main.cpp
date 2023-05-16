@@ -5,6 +5,8 @@
 #include "cassert"
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
+static const int kColumnWidth = 60;
+
 static const int kWindowHeight = 720;
 static const int kWindowWidth = 1280;
 
@@ -14,6 +16,15 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2)
 	result = { v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 	return result;
 };
+
+void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label)
+{
+	Novice::ScreenPrintf(x, y, "%.02f", vector.x);
+	Novice::ScreenPrintf(x + kColumnWidth, y, "%.02f", vector.y);
+	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%.02f", vector.z);
+	Novice::ScreenPrintf(x + kColumnWidth * 3, y, "%s", label);
+}
+
 
 // スケーリング行列の作成	
 Matrix4x4 MakeScaleMatrix(const Vector3& scale)
@@ -348,7 +359,8 @@ Novice::Initialize(kWindowTitle, 1280, 720);
 		///
 		/// ↓描画処理ここから
 		///
-
+	
+	VectorScreenPrintf(0, 0, cross, "Cross");
 	Novice::DrawTriangle(int(screenVerticles[0].x), int(screenVerticles[0].y), int(screenVerticles[1].x), int(screenVerticles[1].y),
 		int(screenVerticles[2].x), int(screenVerticles[2].y), RED, kFillModeSolid);
 
