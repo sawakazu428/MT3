@@ -335,6 +335,7 @@ Novice::Initialize(kWindowTitle, 1280, 720);
 		///
 		/// ↓更新処理ここから
 		///
+		
 	Vector3 cross = Cross(v1, v2);
 	Matrix4x4 worldMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, rotate, translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(Vector3{ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
