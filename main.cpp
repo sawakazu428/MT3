@@ -309,8 +309,7 @@ Novice::Initialize(kWindowTitle, 1280, 720);
 	Vector3 v1{ 1.2f,-3.9f,2.5f };
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
 	Vector3 rotate{};
-	Vector3 translate
-	{1.0f,1.0f,1.0f	};
+	Vector3 translate{};
 
 	Vector3 cameraPosition = { 480.0f,200.0f,100.0f };
 	// ウィンドウの×ボタンが押されるまでループ
