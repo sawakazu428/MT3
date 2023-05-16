@@ -346,33 +346,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 		if (keys[DIK_W])
 		{
-			kLocalVerticles[0].z += speed;
-			kLocalVerticles[1].z += speed;
-			kLocalVerticles[2].z += speed;
+			translate.z += speed;
 		}
 		if (keys[DIK_A])
 		{
-			kLocalVerticles[0].x -= speed;
-			kLocalVerticles[1].x -= speed;
-			kLocalVerticles[2].x -= speed;
+			translate.x -= speed;
 		}
 		if (keys[DIK_S])
 		{
-			kLocalVerticles[0].z -= speed;
-			kLocalVerticles[1].z -= speed;
-			kLocalVerticles[2].z -= speed;
+			translate.z -= speed;
 		}
 		if (keys[DIK_D])
 		{
-			kLocalVerticles[0].x += speed;
-			kLocalVerticles[1].x += speed;
-			kLocalVerticles[2].x += speed;
+			translate.x += speed;
 		}
 
 
 	Vector3 cross = Cross(v1, v2);
 	rotateY += 0.03f;
-	Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,rotateY,0.0f }, { 0.0f,0.0f,0.0f });
+	Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,rotateY,0.0f }, translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
 	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f,float(kWindowWidth) /float(kWindowHeight),0.1f,100.0f);
