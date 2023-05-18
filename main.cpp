@@ -21,7 +21,7 @@ void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMa
 		// 上の情報を使ってワールド座標系上の始点と終点を求める
 		// スクリーン座標系まで変換をかける
 		// 変換した座標を使って表示色は薄い灰色(0xAAAAAAFF),原点は黒ぐらいが良いが、何でも良い
-		Novice::DrawLine(xIndex,xIndex,xIndex, xIndex, 0xAAAAAAFF);
+		Novice::DrawLine(xIndex,xIndex,kGridEvery, kGridEvery, 0xAAAAAAFF);
 	}
 	// 左から右も同じように順々に引いていく
 	for (uint32_t zIndex = 0; zIndex <= kSubdvision; ++zIndex)
@@ -41,7 +41,7 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 	// 緯度の方向に分割 -π/2 ~ π/2
 	for (uint32_t latIndex = 0; latIndex < kSubdvision; ++latIndex)
 	{
-		//float lat = -pi / 2.0f + kLatEvery * latIndex; // 現在の緯度
+		float lat = -pi / 2.0f + kLatEvery * latIndex; // 現在の緯度
 		// 緯度の方向に分割θ ~ 2π
 		for (uint32_t lonIndex = 0; lonIndex < kSubdvision; ++lonIndex)
 		{
