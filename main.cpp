@@ -34,10 +34,13 @@ void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMa
 
 void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
 {
-	//float pi = M_PI / 1.0f;
+	float pi = M_PI / 1.0f;
 	const uint32_t kSubdvision = 10; // 分割数
 	const float kLonEvery = 2.0f;    // Gridの半分の幅
 	const float kLatEvery = 2;         // 一つ分の長さ
+
+
+
 	// 緯度の方向に分割 -π/2 ~ π/2
 	for (uint32_t latIndex = 0; latIndex < kSubdvision; ++latIndex)
 	{
@@ -48,6 +51,9 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 			float lon = lonIndex * kLonEvery; // 現在の経度
 			// world座標系でのa,b,cを求める
 			Vector3 a, b, c;
+
+
+
 			// a,b,cをScreen座標系まで変換...
 			// ab,bcで線を引く
 			//Novice::DrawLine(color);
