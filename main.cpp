@@ -134,6 +134,19 @@ Matrix4x4 Inverse(const Matrix4x4& m)
 	return result;
 };
 
+Matrix4x4 MakeScaleMatrix(const Vector3& scale)
+{
+	Matrix4x4 result;
+
+	result = {
+		scale.x,0.0f,0.0f,0.0f,
+		0.0f,scale.y,0.0f,0.0f,
+		0.0f,0.0f,scale.z,0.0f,
+		0.0f,0.0f,0.0f,1.0f
+	};
+	return result;
+
+};
 
 Matrix4x4 MakeRotateXMatrix(float theta) {
 
