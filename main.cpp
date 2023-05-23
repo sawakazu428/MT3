@@ -10,6 +10,17 @@ struct Sphere
 	float radius;   //!< 半径
 };
 
+//Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height)
+//{
+//	Matrix4x4 result;
+//	result = { width / 2.0f, 0.0f,	0.0f, 0.0f,
+//		0.0f, -height / 2.0f, 0.0f, 0.0f,
+//		1.0f, 0.0f ,0.0f, 1.0f,
+//		left + (width / 2.0f), top + (height / 2.0f), 0.0f, 1.0f
+//	};
+//	return result;
+//}
+
 void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMatrix)
 {
 	const float kGridHalfWidth = 2.0f;                                     // Gridの半分の幅
