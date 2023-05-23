@@ -52,6 +52,7 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	return result;
 };
 
+
 //Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height)
 //{
 //	Matrix4x4 result;
@@ -63,6 +64,21 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 //	return result;
 //}
 
+ector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
+{
+	Vector3 result; // w=1がデカルト座標系であるので(x,y,1)のベクトルとしてmatrixとの積をとる
+	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
+	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
+	result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + 1.0f * matrix.m[3][2];
+	float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + 1.0f * matrix.m[3][3];
+	assert(w != 0.0f); // ベクトルに対して基本的な操作を行う行列でwが0になることはありえない
+	result.x /= w; // w=1がデカルト座標系であるので、wを除算することで同次座標をデカルト座標に戻す
+	result.y /= w;
+	result.z /= w;
+	return result;
+};
+
+
 void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMatrix)
 {
 	const float kGridHalfWidth = 2.0f;                                     // Gridの半分の幅
@@ -72,15 +88,32 @@ void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMa
 	for (uint32_t xIndex = 0; xIndex <= kSubdvision; ++xIndex)
 	{
 		// 上の情報を使ってワールド座標系上の始点と終点を求める
+		float x = -kGridHalfWidth + (xIndex * kGridEvery);
+		Vector3 start{ x,0.0f, -kGridHalfWidth };
+		Vector3 end{ x,0.0f,kGridHalfWidth };
+
 		// スクリーン座標系まで変換をかける
+		Vector3 startScreen = Transform(Transform(start, ViewProjectionMatrix), viewportMatrix);
+		Vector3 endScreen = Transform(Transform(end, ViewProjectionMatrix), viewportMatrix);
+
 		// 変換した座標を使って表示色は薄い灰色(0xAAAAAAFF),原点は黒ぐらいが良いが、何でも良い
-		Novice::DrawLine(xIndex,xIndex,kGridEvery, kGridEvery, 0xAAAAAAFF);
+		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),x == 0.0f ? BLACK : 0xAAAAAAFF);
 	}
 	// 左から右も同じように順々に引いていく
 	for (uint32_t zIndex = 0; zIndex <= kSubdvision; ++zIndex)
 	{
-	// 奥から手前が左右に変わるだけ
-		//Novice::DrawLine();
+		// 上の情報を使ってワールド座標系上の始点と終点を求める
+		float z = -kGridHalfWidth + (zIndex * kGridEvery);
+		Vector3 start{ x,0.0f, -kGridHalfWidth };
+		Vector3 end{ x,0.0f,kGridHalfWidth };
+
+		// スクリーン座標系まで変換をかける
+		Vector3 startScreen = Transform(Transform(start, ViewProjectionMatrix), viewportMatrix);
+		Vector3 endScreen = Transform(Transform(end, ViewProjectionMatrix), viewportMatrix);
+
+		// 変換した座標を使って表示色は薄い灰色(0xAAAAAAFF),原点は黒ぐらいが良いが、何でも良い
+		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y), x == 0.0f ? BLACK : 0xAAAAAAFF);
+
 	}
 
 }
