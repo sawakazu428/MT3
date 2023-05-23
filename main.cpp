@@ -10,6 +10,18 @@ struct Sphere
 	float radius;   //!< 半径
 };
 
+Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)
+{
+	Matrix4x4 result;
+	result = {
+		width / 2.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, -height / 2.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, maxDepth - minDepth, 0.0f,
+		left + (width / 2.0f), top + (height / 2.0f), minDepth ,1.0f
+	};
+	return result;
+};
+
 //Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height)
 //{
 //	Matrix4x4 result;
