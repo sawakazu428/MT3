@@ -5,6 +5,7 @@
 #define _USE_MATH_DEFINES
 #include "math.h"
 #include "numbers"
+#include "cassert"
 
 static const int kWindowHeight = 720;
 static const int kWindowWidth = 1280;
@@ -318,15 +319,15 @@ void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMa
 	{
 		// 上の情報を使ってワールド座標系上の始点と終点を求める
 		float z = -kGridHalfWidth + (zIndex * kGridEvery);
-		Vector3 start{ x,0.0f, -kGridHalfWidth };
-		Vector3 end{ x,0.0f,kGridHalfWidth };
+		Vector3 start{ z,0.0f, -kGridHalfWidth };
+		Vector3 end{ z,0.0f,kGridHalfWidth };
 
 		// スクリーン座標系まで変換をかける
 		Vector3 startScreen = Transform(Transform(start, ViewProjectionMatrix), viewportMatrix);
 		Vector3 endScreen = Transform(Transform(end, ViewProjectionMatrix), viewportMatrix);
 
 		// 変換した座標を使って表示色は薄い灰色(0xAAAAAAFF),原点は黒ぐらいが良いが、何でも良い
-		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y), x == 0.0f ? BLACK : 0xAAAAAAFF);
+		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y), z == 0.0f ? BLACK : 0xAAAAAAFF);
 
 	}
 
@@ -424,8 +425,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		DrawGrid();
-		DrawSphere();
+		DrawGrid(ViewProjectionMatrix,viewportMatrix);
+		DrawSphere(,);
 
 		///
 		/// ↑描画処理ここまで
