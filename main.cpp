@@ -6,6 +6,7 @@
 #include "math.h"
 #include "numbers"
 #include "cassert"
+#include "imgui.h"
 
 static const int kWindowHeight = 720;
 static const int kWindowWidth = 1280;
@@ -254,6 +255,24 @@ Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
 	return result;
 }
 
+Matrix4x4& operator*=(Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 result = {};
+	for (size_t i = 0; i < 4; i++) {
+		for (size_t j = 0; j < 4; j++) {
+			for (size_t k = 0; k < 4; k++) {
+				result.m[i][j] += m1.m[i][k] * m2.m[k][j];
+			}
+		}
+	}
+
+	m1 = result;
+	return m1;
+}
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 result = m1;
+
+	return result *= m2;
+}
 
 
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vector3& translate)
@@ -312,7 +331,9 @@ void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMa
 		Vector3 endScreen = Transform(Transform(end, ViewProjectionMatrix), viewportMatrix);
 
 		// 変換した座標を使って表示色は薄い灰色(0xAAAAAAFF),原点は黒ぐらいが良いが、何でも良い
-		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),x == 0.0f ? BLACK : 0xAAAAAAFF);
+		Novice::DrawLine(
+			int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),
+			x == 0.0f ? BLACK : 0xAAAAAAFF);
 	}
 	// 左から右も同じように順々に引いていく
 	for (uint32_t zIndex = 0; zIndex <= kSubdvision; ++zIndex)
@@ -327,7 +348,9 @@ void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMa
 		Vector3 endScreen = Transform(Transform(end, ViewProjectionMatrix), viewportMatrix);
 
 		// 変換した座標を使って表示色は薄い灰色(0xAAAAAAFF),原点は黒ぐらいが良いが、何でも良い
-		Novice::DrawLine(int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y), z == 0.0f ? BLACK : 0xAAAAAAFF);
+		Novice::DrawLine(
+			int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),
+			z == 0.0f ? BLACK : 0xAAAAAAFF);
 
 	}
 
@@ -394,7 +417,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
-	Vector3 cameraPosition = { 0.0f,0.0f,-5.0f };
+	Vector3 cameraPosition = { 0.1f,0.1f,0.1f };
+	Sphere sphere{ 0.1f,0.0f,0.0f };
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -409,11 +433,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 		
+
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
 		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
 		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
 		// WVPMatrixを作る
-		Matrix4x4 ViewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
+		Matrix4x4 ViewProjectionMatrix =Multiply(viewMatrix, projectionMatrix);
 		// ViewportMatrixを作る 
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
@@ -424,9 +449,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+		ImGui::Begin("window");
+		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x,0.01f);
+		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("SphereCenter",&	sphere.center.x,0.01f);
+		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+		ImGui::End();
 
 		DrawGrid(ViewProjectionMatrix,viewportMatrix);
-		DrawSphere(,);
+		//DrawSphere(sphere,ViewProjectionMatrix,viewportMatrix,BLACK);
 
 		///
 		/// ↑描画処理ここまで
