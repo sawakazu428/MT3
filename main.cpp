@@ -154,6 +154,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
+		
+		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f, 0.0f,0.0f }, translate);
+
+		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, cameraRotate, cameraTranslate);
+
+		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+
+		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
+
+		Matrix4x4 ViewProjectionMatrix =　Multiply(viewMatrix, projectionMatrix));
+
+		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+
+
 	Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
 	Vector3 end = Transform(Add(Transform(segment.origin,segment.diff), viewProjectionMatrix), viewportMatrix);
 	Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
