@@ -21,18 +21,15 @@ struct Sphere
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
 {
 	Matrix4x4 result;
-	//float theta = 3.14f;
-	float tan = std::tanf(fovY / 2);
-	float cot = 1.0f / tan;
+	float cot = 1.0f / std::tan(fovY / 2.0f);
 
-	result = {
-		1.0f / aspectRatio * cot, 0.0f, 0.0f, 0.0f,
-		0.0f, cot, 0.0f, 0.0f,
-		0.0f, 0.0f, farClip / (farClip - nearClip), 1.0f,
-		0.0f, 0.0f, (-nearClip * farClip) / (farClip - nearClip),0.0f
-	};
+	result = { (1.0f / aspectRatio) * cot, 0.0f,    0.0f,                                       0.0f,
+				0.0f,                      cot,     0.0f,                                       0.0f,
+				0.0f,                      0.0f,    farClip / (farClip - nearClip),             1.0f,
+				0.0f,                      0.0f,    -nearClip * farClip / (farClip - nearClip), 0.0f };
+
 	return result;
-};
+}
 
 // 2. 正射影行列
 Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip)
@@ -50,27 +47,13 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)
 {
 	Matrix4x4 result;
-	result = {
-		width / 2.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, -height / 2.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, maxDepth - minDepth, 0.0f,
-		left + (width / 2.0f), top + (height / 2.0f), minDepth ,1.0f
-	};
+	result = { width / 2,        0.0f,           0.0f,              0.0f,
+			   0.0f,             -height / 2,      0.0f,                0.0f,
+			   0.0f,             0.0f,             maxDepth - minDepth, 0.0f,
+			   left + width / 2, top + height / 2, minDepth,            1.0f };
+
 	return result;
-};
-
-
-//Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height)
-//{
-//	Matrix4x4 result;
-//	result = { width / 2.0f, 0.0f,	0.0f, 0.0f,
-//		0.0f, -height / 2.0f, 0.0f, 0.0f,
-//		1.0f, 0.0f ,0.0f, 1.0f,
-//		left + (width / 2.0f), top + (height / 2.0f), 0.0f, 1.0f
-//	};
-//	return result;
-//}
-
+}
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	result.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] + m1.m[0][3] * m2.m[3][0];
@@ -316,18 +299,24 @@ Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix)
 void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMatrix)
 {
 	const float kGridHalfWidth = 2.0f;                                     // Gridの半分の幅
+
 	const uint32_t kSubdvision = 10;                                       // 分割数
+	
 	const float kGridEvery = (kGridHalfWidth * 2.0f) / float(kSubdvision); // 一つ分の長さ
+	
 	// 奥から手前への線を順々に引いていく
 	for (uint32_t xIndex = 0; xIndex <= kSubdvision; ++xIndex)
 	{
 		// 上の情報を使ってワールド座標系上の始点と終点を求める
 		float x = -kGridHalfWidth + (xIndex * kGridEvery);
-		Vector3 start{ x,0.0f, -kGridHalfWidth };
-		Vector3 end{ x,0.0f,kGridHalfWidth };
 
 		// スクリーン座標系まで変換をかける
+		Vector3 start{ x,0.0f, -kGridHalfWidth };
+
 		Vector3 startScreen = Transform(Transform(start, ViewProjectionMatrix), viewportMatrix);
+		
+		Vector3 end{ x,0.0f,kGridHalfWidth };
+		
 		Vector3 endScreen = Transform(Transform(end, ViewProjectionMatrix), viewportMatrix);
 
 		// 変換した座標を使って表示色は薄い灰色(0xAAAAAAFF),原点は黒ぐらいが良いが、何でも良い
@@ -335,13 +324,16 @@ void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMa
 			int(startScreen.x), int(startScreen.y), int(endScreen.x), int(endScreen.y),
 			x == 0.0f ? BLACK : 0xAAAAAAFF);
 	}
+
 	// 左から右も同じように順々に引いていく
 	for (uint32_t zIndex = 0; zIndex <= kSubdvision; ++zIndex)
 	{
 		// 上の情報を使ってワールド座標系上の始点と終点を求める
 		float z = -kGridHalfWidth + (zIndex * kGridEvery);
-		Vector3 start{ z,0.0f, -kGridHalfWidth };
-		Vector3 end{ z,0.0f,kGridHalfWidth };
+
+		Vector3 start{ -kGridHalfWidth,0.0f,z };
+		
+		Vector3 end{ kGridHalfWidth,0.0f,z };
 
 		// スクリーン座標系まで変換をかける
 		Vector3 startScreen = Transform(Transform(start, ViewProjectionMatrix), viewportMatrix);
@@ -399,7 +391,7 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 
 			// ab,bcで線を引く
 			Novice::DrawLine(int(screenA.x), int(screenA.y), int(screenB.x), int(screenB.y), color);
-			Novice::DrawLine(int(screenA.x), int(screenA.y), int(screenC.x), int(screenC.y),color);
+			Novice::DrawLine(int(screenB.x), int(screenB.y), int(screenC.x), int(screenC.y),color);
 		}
 	}
 }
@@ -415,10 +407,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
+	Vector3 rotate{};
+
+	Vector3 translate{};
+
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
-	Vector3 cameraPosition = { 0.1f,0.1f,0.1f };
-	Sphere sphere{ 0.1f,0.0f,0.0f };
+	Sphere sphere =
+	{
+		{0.0f,0.0f,0.0f},
+		0.5f
+	};
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -434,12 +433,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		
 
-		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, cameraPosition);
+		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f, 0.0f,0.0f }, translate);
+
+		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, cameraRotate, cameraTranslate);
+
 		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+
 		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
-		// WVPMatrixを作る
-		Matrix4x4 ViewProjectionMatrix =Multiply(viewMatrix, projectionMatrix);
-		// ViewportMatrixを作る 
+
+		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
 		///
@@ -449,15 +452,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+	    ImGui::SetNextWindowPos({ 0,0 });
+		ImGui::SetNextWindowSize({ 300, 200 });
+
 		ImGui::Begin("window");
+		
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x,0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::DragFloat3("SphereCenter",&	sphere.center.x,0.01f);
 		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+		
 		ImGui::End();
 
-		DrawGrid(ViewProjectionMatrix,viewportMatrix);
-		//DrawSphere(sphere,ViewProjectionMatrix,viewportMatrix,BLACK);
+		DrawGrid(worldViewProjectionMatrix,viewportMatrix);
+		DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix, BLACK);
 
 		///
 		/// ↑描画処理ここまで
