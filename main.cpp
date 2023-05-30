@@ -515,11 +515,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{ 0.5f, -0.5f, 0.0f},
 	};
 
-	Sphere sphere =
-	{
-		{0.0f,0.0f,0.0f},
-		0.5f
-	};
 
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
