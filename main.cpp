@@ -29,6 +29,7 @@ struct Sphere
 {
 	Vector3 center; //!< 中心点
 	float radius;   //!< 半径
+	int color;      //!< 色
 };
 
 //内積
@@ -451,7 +452,7 @@ bool IsCollision(const Sphere& s1, const Sphere& s2)
 	if (distance <= s1.radius + s2.radius)
 	{
 		// 当たった処理を諸々
-		
+		s1.color = RED;
 	}
 	return distance;
 }
