@@ -449,28 +449,67 @@ float Length(const Vector3& v)
 {
 	return sqrtf(Dot(v, v));
 };
-int color = WHITE;
-bool IsCollision(const Sphere& s1, const Sphere& s2)
+
+// 正規化
+Vector3 Normalize(const Vector3& v)
 {
-	// 2つの球の中心点間の距離を求める
-	Vector3 distance = { (s2.center.x - s1.center.x) * (s2.center.x - s1.center.x) +
-					   (s2.center.y - s1.center.y) * (s2.center.y - s1.center.y) +
-					   (s2.center.z - s1.center.z) * (s2.center.z - s1.center.z) };
-	color = s1.color;
-	float length = (s1.radius + s2.radius) * (s1.radius + s2.radius);
-	if (distance.x + distance.y + distance.z <= length)
+	float length = Length(v);
+	assert(length != 0.0f);
+	return { v.x / length, v.y / length, v.z / length };
+};
+
+//int color = WHITE;
+//bool IsCollision(const Sphere& s1, const Sphere& s2)
+//{
+//	// 2つの球の中心点間の距離を求める
+//	Vector3 distance = { (s2.center.x - s1.center.x) * (s2.center.x - s1.center.x) +
+//					   (s2.center.y - s1.center.y) * (s2.center.y - s1.center.y) +
+//					   (s2.center.z - s1.center.z) * (s2.center.z - s1.center.z) };
+//	color = s1.color;
+//	float length = (s1.radius + s2.radius) * (s1.radius + s2.radius);
+//	if (distance.x + distance.y + distance.z <= length)
+//	{
+//		// 当たった処理を諸々
+//		color = RED;
+//	}
+//	else
+//	{
+//		color = WHITE;
+//	}
+//	return color;
+//}
+
+Vector3 Perpendicular(const Vector3& vector)
+{
+	if (vector.x != 0.0f || vector.y != 0.0f)
 	{
-		// 当たった処理を諸々
-		color = RED;
+		return { -vector.y,vector.x,0.0f };
 	}
-	else
-	{
-		color = WHITE;
-	}
-	return color;
+	return { 0.0f,-vector.z,vector.y };
 }
+	
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 center = Multiply(plane.distance, plane.normal);                   // 1
+	Vector3 perpendiculars[4];
+	perpendiculars[0] = Normalize(Perpendicular(plane.normal));                 // 2
+	perpendiculars[1] = { -perpendiculars[0].x,-perpendiculars[0].y,-perpendiculars[0].z }; // 3
+	perpendiculars[2] = Cross(plane.normal, perpendiculars[0]);                    // 4
+	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z }; // 5
+	// 6
+	Vector3 points[4];
+	for (int32_t index = 0; index < 4; ++index)
+	{
+		Vector3 extend = Multiply(2.0f, perpendiculars[index]);
+		Vector3 point = Add(center, extend);
+		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
+	}
+	Novice::DrawLine(int(points[0].x), int(points[0].y), int(points[1].x), int(points[1].y), color);
+	Novice::DrawLine(int(points[1].x), int(points[1].y), int(points[2].x), int(points[2].y), color);
+	Novice::DrawLine(int(points[2].x), int(points[2].y), int(points[3].x), int(points[3].y), color);
+	Novice::DrawLine(int(points[3].x), int(points[3].y), int(points[0].x), int(points[0].y), color);
 
-
+}
 
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
@@ -514,13 +553,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 translate{};
 
 	Vector3 cameraTranslate = { 0.0f,1.9f,-6.49f };
-	Vector3 cameraPosition = { 0.0f, 0.0f, -10.0f };
+	Vector3 cameraPosition	 { 0.0f, 0.0f, -10.0f };
 	Vector3 cameraRotate = { 0.26f,0.0f,0.0f };
 
 	Vector3 kLocalVertices[3]{
 		{-0.5f, -0.5f, 0.0f},
 		{ 0.0f,  0.5f, 0.0f},
 		{ 0.5f, -0.5f, 0.0f},
+	};
+
+	Plane plane =
+	{
+		{0.0f,0.0f,0.0f},
+		0.5f
 	};
 
 	Sphere sphere =
