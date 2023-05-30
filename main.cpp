@@ -562,6 +562,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 	//Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y), WHITE);
+
+	ImGui::SetNextWindowPos({ 0,0 });
+	ImGui::SetNextWindowSize({ 300, 200 });
+
+	ImGui::Begin("window");
+
+	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+
+	ImGui::End();
+
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 	DrawSphere(pointSphere, worldViewProjectionMatrix, viewportMatrix,WHITE);
 	DrawSphere(closestPointSphere, worldViewProjectionMatrix, viewportMatrix, WHITE);
