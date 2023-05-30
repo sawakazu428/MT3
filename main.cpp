@@ -437,16 +437,23 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 	}
 }
 
+// 長さ(ノルム)
+float Length(const Vector3& v)
+{
+	return sqrtf(Dot(v, v));
+};
+
 bool IsCollision(const Sphere& s1, const Sphere& s2)
 {
 	// 2つの球の中心点間の距離を求める
-	float distance = Length(sphere2.center - sphere1.center);
+	float distance = Length(s2.center) - Length(s1.center);
 
-	if (distance <= sphere1.radius + sphere2.tadius)
+	if (distance <= s1.radius + s2.radius)
 	{
 		// 当たった処理を諸々
+		
 	}
-
+	return distance;
 }
 
 
@@ -510,9 +517,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
-
-	// 2つの球の中心点間の距離を求める
-	float distance = Length(sphere2.center - sphere1.center); 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -553,8 +557,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 	Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y), WHITE);
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-	DrawSphere(pointSphere, worldViewProjectionMatrix, viewportMatrix,RED);
-	DrawSphere(closestPointSphere, worldViewProjectionMatrix, viewportMatrix, BLACK);
+	DrawSphere(pointSphere, worldViewProjectionMatrix, viewportMatrix,WHITE);
+	DrawSphere(closestPointSphere, worldViewProjectionMatrix, viewportMatrix, WHITE);
 
 
 		///
