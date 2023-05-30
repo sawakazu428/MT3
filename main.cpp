@@ -30,103 +30,35 @@ struct Sphere
 	Vector3 center; //!< 中心点
 	float radius;   //!< 半径
 };
-Vector3 Project(const Vector3& v1, const Vector3& v2)
+
+//内積
+float Dot(const Vector3& v1, const Vector3& v2)
 {
-
-}
-
-Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
-{
-
+	return { v1.x * v2.x + v1.y * v2.y + v1.z * v2.z };
 };
 
-Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
-	Matrix4x4 result;
-	result.m[0][0] = m1.m[0][0] + m2.m[0][0];
-	result.m[0][1] = m1.m[0][1] + m2.m[0][1];
-	result.m[0][2] = m1.m[0][2] + m2.m[0][2];
-	result.m[0][3] = m1.m[0][3] + m2.m[0][3];
-	result.m[1][0] = m1.m[1][0] + m2.m[1][0];
-	result.m[1][1] = m1.m[1][1] + m2.m[1][1];
-	result.m[1][2] = m1.m[1][2] + m2.m[1][2];
-	result.m[1][3] = m1.m[1][3] + m2.m[1][3];
-	result.m[2][0] = m1.m[2][0] + m2.m[2][0];
-	result.m[2][1] = m1.m[2][1] + m2.m[2][1];
-	result.m[2][2] = m1.m[2][2] + m2.m[2][2];
-	result.m[2][3] = m1.m[2][3] + m2.m[2][3];
-	result.m[3][0] = m1.m[3][0] + m2.m[3][0];
-	result.m[3][1] = m1.m[3][1] + m2.m[3][1];
-	result.m[3][2] = m1.m[3][2] + m2.m[3][2];
-	result.m[3][3] = m1.m[3][3] + m2.m[3][3];
-	return result;
-};
-
-Matrix4x4 Subtract(const Matrix4x4& m1, const Matrix4x4& m2)
+//行列の積
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2)
 {
-	Matrix4x4 result;
-	result.m[0][0] = m1.m[0][0] - m2.m[0][0];
-	result.m[0][1] = m1.m[0][1] - m2.m[0][1];
-	result.m[0][2] = m1.m[0][2] - m2.m[0][2];
-	result.m[0][3] = m1.m[0][3] - m2.m[0][3];
-	result.m[1][0] = m1.m[1][0] - m2.m[1][0];
-	result.m[1][1] = m1.m[1][1] - m2.m[1][1];
-	result.m[1][2] = m1.m[1][2] - m2.m[1][2];
-	result.m[1][3] = m1.m[1][3] - m2.m[1][3];
-	result.m[2][0] = m1.m[2][0] - m2.m[2][0];
-	result.m[2][1] = m1.m[2][1] - m2.m[2][1];
-	result.m[2][2] = m1.m[2][2] - m2.m[2][2];
-	result.m[2][3] = m1.m[2][3] - m2.m[2][3];
-	result.m[3][0] = m1.m[3][0] - m2.m[3][0];
-	result.m[3][1] = m1.m[3][1] - m2.m[3][1];
-	result.m[3][2] = m1.m[3][2] - m2.m[3][2];
-	result.m[3][3] = m1.m[3][3] - m2.m[3][3];
-	return result;
-};
-
-Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	result.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] + m1.m[0][3] * m2.m[3][0];
 	result.m[0][1] = m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1] + m1.m[0][2] * m2.m[2][1] + m1.m[0][3] * m2.m[3][1];
 	result.m[0][2] = m1.m[0][0] * m2.m[0][2] + m1.m[0][1] * m2.m[1][2] + m1.m[0][2] * m2.m[2][2] + m1.m[0][3] * m2.m[3][2];
 	result.m[0][3] = m1.m[0][0] * m2.m[0][3] + m1.m[0][1] * m2.m[1][3] + m1.m[0][2] * m2.m[2][3] + m1.m[0][3] * m2.m[3][3];
-
 	result.m[1][0] = m1.m[1][0] * m2.m[0][0] + m1.m[1][1] * m2.m[1][0] + m1.m[1][2] * m2.m[2][0] + m1.m[1][3] * m2.m[3][0];
-
-	result.m[1][1] = m1.m[1][0] * m2.m[0][1] + m1.m[1][1] * m2.m[1][1]
-		+ m1.m[1][2] * m2.m[2][1] + m1.m[1][3] * m2.m[3][1];
-
-	result.m[1][2] = m1.m[1][0] * m2.m[0][2] + m1.m[1][1] * m2.m[1][2]
-		+ m1.m[1][2] * m2.m[2][2] + m1.m[1][3] * m2.m[3][2];
-
-	result.m[1][3] = m1.m[1][0] * m2.m[0][3] + m1.m[1][1] * m2.m[1][3]
-		+ m1.m[1][2] * m2.m[2][3] + m1.m[1][3] * m2.m[3][3];
-
-	result.m[2][0] = m1.m[2][0] * m2.m[0][0] + m1.m[2][1] * m2.m[1][0]
-		+ m1.m[2][2] * m2.m[2][0] + m1.m[2][3] * m2.m[3][0];
-
-	result.m[2][1] = m1.m[2][0] * m2.m[0][1] + m1.m[2][1] * m2.m[1][1]
-		+ m1.m[2][2] * m2.m[2][1] + m1.m[2][3] * m2.m[3][1];
-
-	result.m[2][2] = m1.m[2][0] * m2.m[0][2] + m1.m[2][1] * m2.m[1][2]
-		+ m1.m[2][2] * m2.m[2][2] + m1.m[2][3] * m2.m[3][2];
-
-	result.m[2][3] = m1.m[2][0] * m2.m[0][3] + m1.m[2][1] * m2.m[1][3]
-		+ m1.m[2][2] * m2.m[2][3] + m1.m[2][3] * m2.m[3][3];
-
-	result.m[3][0] = m1.m[3][0] * m2.m[0][0] + m1.m[3][1] * m2.m[1][0]
-		+ m1.m[3][2] * m2.m[2][0] + m1.m[3][3] * m2.m[3][0];
-
-	result.m[3][1] = m1.m[3][0] * m2.m[0][1] + m1.m[3][1] * m2.m[1][1]
-		+ m1.m[3][2] * m2.m[2][1] + m1.m[3][3] * m2.m[3][1];
-
-	result.m[3][2] = m1.m[3][0] * m2.m[0][2] + m1.m[3][1] * m2.m[1][2]
-		+ m1.m[3][2] * m2.m[2][2] + m1.m[3][3] * m2.m[3][2];
-
-	result.m[3][3] = m1.m[3][0] * m2.m[0][3] + m1.m[3][1] * m2.m[1][3]
-		+ m1.m[3][2] * m2.m[2][3] + m1.m[3][3] * m2.m[3][3];
+	result.m[1][1] = m1.m[1][0] * m2.m[0][1] + m1.m[1][1] * m2.m[1][1] + m1.m[1][2] * m2.m[2][1] + m1.m[1][3] * m2.m[3][1];
+	result.m[1][2] = m1.m[1][0] * m2.m[0][2] + m1.m[1][1] * m2.m[1][2] + m1.m[1][2] * m2.m[2][2] + m1.m[1][3] * m2.m[3][2];
+	result.m[1][3] = m1.m[1][0] * m2.m[0][3] + m1.m[1][1] * m2.m[1][3] + m1.m[1][2] * m2.m[2][3] + m1.m[1][3] * m2.m[3][3];
+	result.m[2][0] = m1.m[2][0] * m2.m[0][0] + m1.m[2][1] * m2.m[1][0] + m1.m[2][2] * m2.m[2][0] + m1.m[2][3] * m2.m[3][0];
+	result.m[2][1] = m1.m[2][0] * m2.m[0][1] + m1.m[2][1] * m2.m[1][1] + m1.m[2][2] * m2.m[2][1] + m1.m[2][3] * m2.m[3][1];
+	result.m[2][2] = m1.m[2][0] * m2.m[0][2] + m1.m[2][1] * m2.m[1][2] + m1.m[2][2] * m2.m[2][2] + m1.m[2][3] * m2.m[3][2];
+	result.m[2][3] = m1.m[2][0] * m2.m[0][3] + m1.m[2][1] * m2.m[1][3] + m1.m[2][2] * m2.m[2][3] + m1.m[2][3] * m2.m[3][3];
+	result.m[3][0] = m1.m[3][0] * m2.m[0][0] + m1.m[3][1] * m2.m[1][0] + m1.m[3][2] * m2.m[2][0] + m1.m[3][3] * m2.m[3][0];
+	result.m[3][1] = m1.m[3][0] * m2.m[0][1] + m1.m[3][1] * m2.m[1][1] + m1.m[3][2] * m2.m[2][1] + m1.m[3][3] * m2.m[3][1];
+	result.m[3][2] = m1.m[3][0] * m2.m[0][2] + m1.m[3][1] * m2.m[1][2] + m1.m[3][2] * m2.m[2][2] + m1.m[3][3] * m2.m[3][2];
+	result.m[3][3] = m1.m[3][0] * m2.m[0][3] + m1.m[3][1] * m2.m[1][3] + m1.m[3][2] * m2.m[2][3] + m1.m[3][3] * m2.m[3][3];
 	return result;
-}
-
+};
 
 Matrix4x4 Inverse(const Matrix4x4& m)
 {
@@ -361,6 +293,50 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	return result;
 }
 
+//スカラー倍
+Vector3 Multiply(float scalar, const Vector3& v)
+{
+	return{ scalar * v.x, scalar * v.y, scalar * v.z };
+};
+
+//減算
+Vector3 Subtract(const Vector3& v1, const Vector3& v2)
+{
+	return{ v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+};
+
+//加算
+Vector3 Add(const Vector3& v1, const Vector3& v2)
+{
+	return { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+};
+
+// クロス変換
+Vector3 Cross(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 result;
+
+	result = { (v1.y * v2.z - v1.z * v2.y) ,(v1.z * v2.x - v1.x * v2.z) , (v1.x * v2.y - v1.y * v2.x) };
+
+	return result;
+
+}
+Vector3 Project(const Vector3& v1, const Vector3& v2)
+{
+	float v25qLegth = Dot(v2, v2);
+	float dot = Dot(v1, v2);
+	return Multiply(dot / v25qLegth, v2);
+}
+
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
+{
+	Vector3 v = Subtract(point, segment.origin);
+	float t = Dot(v, segment.diff) / Dot(segment.diff, segment.diff);
+	t = std::clamp(t, 0.0f, 1.0f);
+	return Add(segment.origin, Multiply(t, segment.diff));
+};
+
+
 void DrawGrid(const Matrix4x4& ViewProjectionMatrix, const Matrix4x4& viewportMatrix)
 {
 	const float kGridHalfWidth = 2.0f;                                     // Gridの半分の幅
@@ -461,6 +437,28 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 	}
 }
 
+static const int kRowHeight = 20;
+static const int kColumnWidth = 60;
+
+void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix) {
+	for (int row = 0; row < 4; ++row) {
+		for (int column = 0; column < 4; ++column) {
+			Novice::ScreenPrintf(x + column * kColumnWidth, y + row * kRowHeight, "%0.2f",
+				matrix.m[row][column]);
+		}
+	}
+}
+
+void VectorScreenPrintf(int x, int y, const Vector3& vector)
+{
+	Novice::ScreenPrintf(x, y, "%0.2f %0.2f %0.2f", vector.x, vector.y, vector.z);
+
+}
+
+static const int kWindowHeight = 720;
+static const int kWindowWidth = 1280;
+
+
 const char kWindowTitle[] = "GC2B_04_サワダカズキ";
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -476,19 +474,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
+	Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
+	Vector3 closestPoint = ClosestPoint(point, segment);
+
+	Sphere pointSphere{ point,0.01f }; // 1cmの球を描画
+	Sphere closestPointSphere{ closestPoint,0.01f };
+
 	Vector3 rotate{};
 
 	Vector3 translate{};
 
 	Vector3 cameraTranslate = { 0.0f,1.9f,-6.49f };
-
+	Vector3 cameraPosition = { 0.0f, 0.0f, -10.0f };
 	Vector3 cameraRotate = { 0.26f,0.0f,0.0f };
 
-	// ライブラリの初期化
-	int kWindowWidth = 1280;
+	Vector3 kLocalVertices[3]{
+		{-0.5f, -0.5f, 0.0f},
+		{ 0.0f,  0.5f, 0.0f},
+		{ 0.5f, -0.5f, 0.0f},
+	};
 
-	int kWindowHeight = 720;
-
+	Vector3 v1{ 1.2f, -3.9f, 2.5f };
+	Vector3 v2{ 2.8f, 0.4f, -1.3f };
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -510,15 +517,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
 
-		Matrix4x4 viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix));
+		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
 
-	Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
-	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), viewProjectionMatrix), viewportMatrix);
-	Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
-	Vector3 closestPoint = ClosestPoint(point, segment);
+	Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
+	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), worldViewProjectionMatrix), viewportMatrix);
 
 
 		///
@@ -529,12 +534,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 	Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y), WHITE);
-	ImGui::InputFloat3("Project", &project.x, "%.3f", ImguiInputTextFlags_ReadOnly);
-
-	Sphere pointSphere{ point,0.01f }; // 1cmの球を描画
-	Sphere closestPointSphere{ closestPoint,0.01f };
-	DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix,RED);
-	DrawSphere(closestPointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
+	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
+	DrawSphere(pointSphere, worldViewProjectionMatrix, viewportMatrix,RED);
+	DrawSphere(closestPointSphere, worldViewProjectionMatrix, viewportMatrix, BLACK);
 
 
 		///
