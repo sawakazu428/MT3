@@ -437,6 +437,20 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 	}
 }
 
+bool IsCollision(const Sphere& s1, const Sphere& s2)
+{
+	// 2つの球の中心点間の距離を求める
+	float distance = Length(sphere2.center - sphere1.center);
+
+	if (distance <= sphere1.radius + sphere2.tadius)
+	{
+		// 当たった処理を諸々
+	}
+
+}
+
+
+
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
 
@@ -496,6 +510,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
+
+	// 2つの球の中心点間の距離を求める
+	float distance = Length(sphere2.center - sphere1.center); 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -509,6 +526,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 		
+
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f, 0.0f,0.0f }, translate);
 
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, cameraRotate, cameraTranslate);
