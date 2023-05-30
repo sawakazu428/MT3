@@ -27,7 +27,7 @@ struct Segment
 };
 struct Sphere
 {
-	Vector3 center; //!< 中心点
+	Vector3 normal; //!< 中心点
 	float radius;   //!< 半径
 	int color;      //!< 色
 };
@@ -414,22 +414,22 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 			// world座標系でのa,b,cを求める
 			Vector3 a =
 			{
-				sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon),
-				sphere.center.y + sphere.radius * std::sin(lat),
-				sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon)
+				sphere.normal.x + sphere.radius * std::cos(lat) * std::cos(lon),
+				sphere.normal.y + sphere.radius * std::sin(lat),
+				sphere.normal.z + sphere.radius * std::cos(lat) * std::sin(lon)
 			};
 			Vector3 b =
 			{
-				sphere.center.x + sphere.radius * std::cos(lat + kLatEvery) * std::cos(lon),
-				sphere.center.y + sphere.radius * std::sin(lat + kLatEvery),
-				sphere.center.z + sphere.radius * std::cos(lat + kLatEvery) * std::sin(lon)
+				sphere.normal.x + sphere.radius * std::cos(lat + kLatEvery) * std::cos(lon),
+				sphere.normal.y + sphere.radius * std::sin(lat + kLatEvery),
+				sphere.normal.z + sphere.radius * std::cos(lat + kLatEvery) * std::sin(lon)
 
 			};
 			Vector3 c =
 			{
-				sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon + kLonEvery),
-				sphere.center.y + sphere.radius * std::sin(lat),
-				sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon + kLonEvery)
+				sphere.normal.x + sphere.radius * std::cos(lat) * std::cos(lon + kLonEvery),
+				sphere.normal.y + sphere.radius * std::sin(lat),
+				sphere.normal.z + sphere.radius * std::cos(lat) * std::sin(lon + kLonEvery)
 			};
 
 			// a,b,cをScreen座標系まで変換...
@@ -458,26 +458,26 @@ Vector3 Normalize(const Vector3& v)
 	return { v.x / length, v.y / length, v.z / length };
 };
 
-//int color = WHITE;
-//bool IsCollision(const Sphere& s1, const Sphere& s2)
-//{
-//	// 2つの球の中心点間の距離を求める
-//	Vector3 distance = { (s2.center.x - s1.center.x) * (s2.center.x - s1.center.x) +
-//					   (s2.center.y - s1.center.y) * (s2.center.y - s1.center.y) +
-//					   (s2.center.z - s1.center.z) * (s2.center.z - s1.center.z) };
-//	color = s1.color;
-//	float length = (s1.radius + s2.radius) * (s1.radius + s2.radius);
-//	if (distance.x + distance.y + distance.z <= length)
-//	{
-//		// 当たった処理を諸々
-//		color = RED;
-//	}
-//	else
-//	{
-//		color = WHITE;
-//	}
-//	return color;
-//}
+int color = WHITE;
+bool IsCollision(const Sphere& s1, const Plane& p1)
+{
+	// 2つの球の中心点間の距離を求める
+	Vector3 distance = { (p1.center.x - s1.normal.x) * (p1.center.x - s1.normal.x) +
+					   (p1.center.y - s1.normal.y) * (p1.center.y - s1.normal.y) +
+					   (p1.center.z - s1.normal.z) * (p1.center.z - s1.normal.z) };
+	color = s1.color;
+	float length = (s1.radius + p1.radius) * (s1.radius + p1.radius);
+	if (distance.x + distance.y + distance.z <= length)
+	{
+		// 当たった処理を諸々
+		color = RED;
+	}
+	else
+	{
+		color = WHITE;
+	}
+	return color;
+}
 
 Vector3 Perpendicular(const Vector3& vector)
 {
@@ -574,12 +574,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		0.5f
 	};
 
-	Sphere sphere2 =
-	{
-		{1.0f,0.0f,0.5f},
-		0.5f
-	};
-
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
 
@@ -597,7 +591,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 		
-		IsCollision(sphere, sphere2);
+		IsCollision(sphere, plane);
 
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f, 0.0f,0.0f }, translate);
 
@@ -621,7 +615,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+	ImGui::DragFloat3("SphereCenter", &sphere.normal.x, 0.01f);
 	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 
 	ImGui::DragFloat3("Sphere2Center", &sphere2.center.x, 0.01f);
