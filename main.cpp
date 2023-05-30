@@ -3,6 +3,10 @@
 #include "Matrix4x4.h"
 #include "cassert"
 #include "cmath"
+#include <math.h>
+#define _USE_MATH_DEFINES
+#include <numbers>
+#include <ImGuiManager.h>
 
 struct Line 
 {
@@ -21,7 +25,11 @@ struct Segment
 	Vector3 origin; //!< 始点
 	Vector3 diff; //!< 終点への差分ベクトル
 };
-
+struct Sphere
+{
+	Vector3 center; //!< 中心点
+	float radius;   //!< 半径
+};
 Vector3 Project(const Vector3& v1, const Vector3& v2)
 {
 
@@ -508,7 +516,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
-	Vector3 end = Transform(Add(Transform(segment.origin,segment.diff), viewProjectionMatrix), viewportMatrix);
+	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), viewProjectionMatrix), viewportMatrix);
 	Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
 	Vector3 closestPoint = ClosestPoint(point, segment);
 
@@ -525,8 +533,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Sphere pointSphere{ point,0.01f }; // 1cmの球を描画
 	Sphere closestPointSphere{ closestPoint,0.01f };
-	DrawSphere(pointSphere, viewProjectMatrix, viewportMatrix,RED);
-	DrawSphere(closestPointSphere, viewProjectMatrix, viewportMatrix, BLACK);
+	DrawSphere(pointSphere, viewProjectionMatrix, viewportMatrix,RED);
+	DrawSphere(closestPointSphere, viewProjectionMatrix, viewportMatrix, BLACK);
 
 
 		///
