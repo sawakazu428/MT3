@@ -32,6 +32,12 @@ struct Sphere
 	int color;      //!< 色
 };
 
+struct  Plane
+{
+	Vector3 normal; //!< 法線
+	float distance; //!< 距離
+};
+
 //内積
 float Dot(const Vector3& v1, const Vector3& v2)
 {
@@ -576,6 +582,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DragFloat3("Sphere2Center", &sphere2.center.x, 0.01f);
 	ImGui::DragFloat("Sphere2Radius", &sphere2.radius, 0.01f);
 
+	ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
+	plane.normal = Normalize(plane.normal);
 	ImGui::End();
 
 		///
