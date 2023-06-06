@@ -625,6 +625,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
 
+	Vector3 cross01 = Cross(v01, v1p);
+
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
