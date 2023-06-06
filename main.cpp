@@ -27,7 +27,7 @@ struct Segment
 };
 struct Sphere
 {
-	Vector3 normal; //!< 中心点
+	Vector3 center; //!< 中心点
 	float radius;   //!< 半径
 	int color;      //!< 色
 };
@@ -414,22 +414,22 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& ViewProjectionMatrix, con
 			// world座標系でのa,b,cを求める
 			Vector3 a =
 			{
-				sphere.normal.x + sphere.radius * std::cos(lat) * std::cos(lon),
-				sphere.normal.y + sphere.radius * std::sin(lat),
-				sphere.normal.z + sphere.radius * std::cos(lat) * std::sin(lon)
+				sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon),
+				sphere.center.y + sphere.radius * std::sin(lat),
+				sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon)
 			};
 			Vector3 b =
 			{
-				sphere.normal.x + sphere.radius * std::cos(lat + kLatEvery) * std::cos(lon),
-				sphere.normal.y + sphere.radius * std::sin(lat + kLatEvery),
-				sphere.normal.z + sphere.radius * std::cos(lat + kLatEvery) * std::sin(lon)
+				sphere.center.x + sphere.radius * std::cos(lat + kLatEvery) * std::cos(lon),
+				sphere.center.y + sphere.radius * std::sin(lat + kLatEvery),
+				sphere.center.z + sphere.radius * std::cos(lat + kLatEvery) * std::sin(lon)
 
 			};
 			Vector3 c =
 			{
-				sphere.normal.x + sphere.radius * std::cos(lat) * std::cos(lon + kLonEvery),
-				sphere.normal.y + sphere.radius * std::sin(lat),
-				sphere.normal.z + sphere.radius * std::cos(lat) * std::sin(lon + kLonEvery)
+				sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon + kLonEvery),
+				sphere.center.y + sphere.radius * std::sin(lat),
+				sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon + kLonEvery)
 			};
 
 			// a,b,cをScreen座標系まで変換...
@@ -458,27 +458,6 @@ Vector3 Normalize(const Vector3& v)
 	return { v.x / length, v.y / length, v.z / length };
 };
 
-int color = WHITE;
-bool IsCollision(const Sphere& s1, const Plane& p1)
-{
-	// 2つの球の中心点間の距離を求める
-	Vector3 distance = { (p1.center.x - s1.normal.x) * (p1.center.x - s1.normal.x) +
-					   (p1.center.y - s1.normal.y) * (p1.center.y - s1.normal.y) +
-					   (p1.center.z - s1.normal.z) * (p1.center.z - s1.normal.z) };
-	color = s1.color;
-	float length = (s1.radius + p1.radius) * (s1.radius + p1.radius);
-	if (distance.x + distance.y + distance.z <= length)
-	{
-		// 当たった処理を諸々
-		color = RED;
-	}
-	else
-	{
-		color = WHITE;
-	}
-	return color;
-}
-
 Vector3 Perpendicular(const Vector3& vector)
 {
 	if (vector.x != 0.0f || vector.y != 0.0f)
@@ -487,7 +466,7 @@ Vector3 Perpendicular(const Vector3& vector)
 	}
 	return { 0.0f,-vector.z,vector.y };
 }
-	
+
 void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
 {
 	Vector3 center = Multiply(plane.distance, plane.normal);                   // 1
@@ -504,12 +483,39 @@ void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const 
 		Vector3 point = Add(center, extend);
 		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
 	}
-	Novice::DrawLine(int(points[0].x), int(points[0].y), int(points[1].x), int(points[1].y), color);
-	Novice::DrawLine(int(points[1].x), int(points[1].y), int(points[2].x), int(points[2].y), color);
-	Novice::DrawLine(int(points[2].x), int(points[2].y), int(points[3].x), int(points[3].y), color);
+	Novice::DrawLine(int(points[0].x), int(points[0].y), int(points[2].x), int(points[2].y), color);
+	Novice::DrawLine(int(points[1].x), int(points[1].y), int(points[3].x), int(points[3].y), color);
+	Novice::DrawLine(int(points[2].x), int(points[2].y), int(points[1].x), int(points[1].y), color);
 	Novice::DrawLine(int(points[3].x), int(points[3].y), int(points[0].x), int(points[0].y), color);
 
 }
+int color = WHITE;
+bool IsCollision(const Sphere& sphere, const Plane& plane)
+{
+
+	Vector3 center = Multiply(plane.distance, plane.normal);
+
+	// 2つの球の中心点間の距離を求める
+	center = {
+	center.x = plane.normal.x - sphere.center.x,
+	center.y = plane.normal.y - sphere.center.y,
+	center.z = plane.normal.z - sphere.center.z
+	};
+	color = sphere.color;
+	float distance = std::abs(Dot(sphere.center, plane.normal) - plane.distance);
+	if (sphere.radius >= distance)
+	{
+		// 当たった処理を諸々
+		color = RED;
+	}
+	else
+	{
+		color = WHITE;
+	}
+	return color;
+}
+
+	
 
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
@@ -564,8 +570,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Plane plane =
 	{
-		{0.0f,0.0f,0.0f},
-		0.5f
+		{0.1f,0.1f,0.1f},
+		1.0f
 	};
 
 	Sphere sphere =
@@ -591,7 +597,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 		
-		IsCollision(sphere, plane);
+	IsCollision(sphere, plane);
 
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f, 0.0f,0.0f }, translate);
 
@@ -608,6 +614,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
 	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), worldViewProjectionMatrix), viewportMatrix);
+	
 	ImGui::SetNextWindowPos({ 0,0 });
 	ImGui::SetNextWindowSize({ 300, 200 });
 
@@ -615,13 +622,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-	ImGui::DragFloat3("SphereCenter", &sphere.normal.x, 0.01f);
+	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
 	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 
-	ImGui::DragFloat3("Sphere2Center", &sphere2.center.x, 0.01f);
-	ImGui::DragFloat("Sphere2Radius", &sphere2.radius, 0.01f);
-
 	ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
+	ImGui::DragFloat("Plane.distance", &plane.distance, 0.01f);
 	plane.normal = Normalize(plane.normal);
 	ImGui::End();
 
@@ -637,9 +642,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
+	DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,WHITE);
 	DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);
-	DrawSphere(sphere2, worldViewProjectionMatrix, viewportMatrix, WHITE);
-
 
 		///
 		/// ↑描画処理ここまで
