@@ -680,7 +680,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-	DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,line.color);
+	DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, line.color);
+	Novice::DrawLine()
 	//DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);
 
 		///
