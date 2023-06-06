@@ -29,6 +29,7 @@ struct Segment
 {
 	Vector3 origin; //!< 始点
 	Vector3 diff; //!< 終点への差分ベクトル
+	int32_t color; // 色
 
 	static constexpr float kTMin = 0.0f;
 	static constexpr float kTMax = 1.0f;
@@ -498,6 +499,12 @@ void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const 
 	Novice::DrawLine(int(points[3].x), int(points[3].y), int(points[0].x), int(points[0].y), color);
 
 }
+void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 start = Transform(Transform(segment.origin, viewProjectionMatrix), viewportMatrix);
+	Vector3 end = Transform(Transform(Add(segment.origin, segment.diff), viewProjectionMatrix), viewportMatrix);
+	Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y), color);
+}
 int color = WHITE;
 bool IsCollision(const Sphere& sphere, const Plane& plane)
 {
@@ -524,19 +531,19 @@ bool IsCollision(const Sphere& sphere, const Plane& plane)
 	return color;
 }
 
-bool IsCollision2(const Line& line, const Plane& plane)
+bool IsCollision2(const Segment& segment, const Plane& plane)
 {
 	// まず垂直判定を行うために、法線と線の内積を求める
-	float dot = Dot(plane.normal, line.diff);
+	float dot = Dot(plane.normal, segment.diff);
 
 	// 垂直＝並行であるので、衝突しているはずがない
-	if (dot == 0)
+	if (dot != 0)
 	{
 	// tを求める
-	float t = (plane.distance - Dot(line.origin, plane.normal)) / dot;
+	float t = (plane.distance - Dot(segment.origin, plane.normal)) / dot;
 
 	// tと値と線の種類によって衝突しているかを判断する
-	return (Line::kTMin <= t) && (t <= Line::kTMax);
+	return (Segment::kTMin <= t) && (t <= Segment::kTMax);
 	}
 	return false;
 }
@@ -577,7 +584,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	Segment segment{ {-2.0f,-2.0f,-0.0f},{3.0f,3.0f,2.0f} };
+	Segment segment{ 
+		.origin{0.0f,0.0f,0.0f},
+		.diff{1.0f,1.0f,0.0f}
+	};
 	Vector3 point{ -0.0f,0.0f,0.0f };
 
 	Vector3 rotate{};
@@ -639,8 +649,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
 	//ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 
-	ImGui::DragFloat3("Line.Origin", &line.origin.x, 0.01f);
-	ImGui::DragFloat("Line.Diff", &line.diff.x, 0.01f);
+	ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
+	ImGui::DragFloat("Segment.Diff", &segment.diff.x, 0.01f);
 
 
 	ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
@@ -666,7 +676,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
 	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), worldViewProjectionMatrix), viewportMatrix);
 	
-	line.color = IsCollision2(line, plane) ? RED : WHITE;
+	segment.color = IsCollision2(segment, plane) ? RED : WHITE;
 
 		///
 		/// ↑更新処理ここまで
@@ -680,8 +690,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-	DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, line.color);
-	Novice::DrawLine()
+	DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
+	DrawSegment(segment, worldViewProjectionMatrix, viewportMatrix, segment.color);
+
 	//DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);
 
 		///
