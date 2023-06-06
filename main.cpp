@@ -12,6 +12,11 @@ struct Line
 {
 	Vector3 origin; //!< 始点
 	Vector3 diff; //!< 終点への差分ベクトル
+	int32_t color; // 色
+
+	static constexpr float kTMin = std::numeric_limits<float>::lowest();
+	static constexpr float kTMax = (std::numeric_limits<float>::max)();
+
 };
 
 struct Ray
@@ -24,6 +29,10 @@ struct Segment
 {
 	Vector3 origin; //!< 始点
 	Vector3 diff; //!< 終点への差分ベクトル
+
+	static constexpr float kTMin = 0.0f;
+	static constexpr float kTMax = 1.0f;
+
 };
 struct Sphere
 {
@@ -515,6 +524,23 @@ bool IsCollision(const Sphere& sphere, const Plane& plane)
 	return color;
 }
 
+bool IsCollision2(const Line& line, const Plane& plane)
+{
+	// まず垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, line.diff);
+
+	// 垂直＝並行であるので、衝突しているはずがない
+	if (dot == 0)
+	{
+	// tを求める
+	float t = (plane.distance - Dot(line.origin, plane.normal)) / dot;
+
+	// tと値と線の種類によって衝突しているかを判断する
+	return (Line::kTMin <= t) && (t <= Line::kTMax);
+	}
+	return false;
+}
+
 	
 
 static const int kRowHeight = 20;
@@ -580,6 +606,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		0.5f
 	};
 
+	Line line =
+	{
+		.origin{0.0f,0.0f,0.0f},
+		.diff{1.0f,0.0f,0.0f},
+	};
+
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
 
@@ -597,8 +629,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 		
-	IsCollision(sphere, plane);
+	ImGui::SetNextWindowPos({ 0,0 });
+	ImGui::SetNextWindowSize({ 300, 200 });
 
+	ImGui::Begin("window");
+
+	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+	//ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+	//ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+
+	ImGui::DragFloat3("Line.Origin", &line.origin.x, 0.01f);
+	ImGui::DragFloat("Line.Diff", &line.diff.x, 0.01f);
+
+
+	ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
+	ImGui::DragFloat("Plane.distance", &plane.distance, 0.01f);
+	ImGui::End();
+
+	plane.normal = Normalize(plane.normal);
+
+	//IsCollision(sphere, plane);
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f, 0.0f,0.0f }, translate);
 
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, cameraRotate, cameraTranslate);
@@ -615,20 +666,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
 	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), worldViewProjectionMatrix), viewportMatrix);
 	
-	ImGui::SetNextWindowPos({ 0,0 });
-	ImGui::SetNextWindowSize({ 300, 200 });
-
-	ImGui::Begin("window");
-
-	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
-	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
-	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
-
-	ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
-	ImGui::DragFloat("Plane.distance", &plane.distance, 0.01f);
-	plane.normal = Normalize(plane.normal);
-	ImGui::End();
+	line.color = IsCollision2(line, plane) ? RED : WHITE;
 
 		///
 		/// ↑更新処理ここまで
@@ -642,8 +680,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
-	DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,WHITE);
-	DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);
+	DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix,line.color);
+	//DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);
 
 		///
 		/// ↑描画処理ここまで
