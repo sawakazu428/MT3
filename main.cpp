@@ -118,9 +118,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DragFloat3("aabb2.min", &aabb2.min.x, 0.01f);
 	ImGui::DragFloat3("aabb2.max", &aabb2.max.x, 0.01f);
 
-	// 
-	//ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
-	//ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+	 
+	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 	//ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
 	//ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 
