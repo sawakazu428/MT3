@@ -66,6 +66,32 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
 
+	AABB aabb1
+	{
+		.min{-0.5f,-0.5f,-0.5f},
+		.max{0.0f,0.0f,0.0f},
+	};
+
+	AABB aabb2
+	{
+		.min{0.2f,0.2f,0.2f},
+		.max{1.0f,1.0f,1.0f},
+	};
+
+	aabb1.min.x = (std::min)(aabb1.min.x, aabb1.max.x);
+	aabb1.max.x = (std::max)(aabb1.min.x, aabb1.max.x);
+	aabb1.min.y = (std::min)(aabb1.min.y, aabb1.max.y);
+	aabb1.max.y = (std::max)(aabb1.min.y, aabb1.max.y);
+	aabb1.min.z = (std::min)(aabb1.min.z, aabb1.max.z);
+	aabb1.max.z = (std::max)(aabb1.min.z, aabb1.max.z);
+
+	aabb2.min.x = (std::min)(aabb2.min.x, aabb2.max.x);
+	aabb2.max.x = (std::max)(aabb2.min.x, aabb2.max.x);
+	aabb2.min.y = (std::min)(aabb2.min.y, aabb2.max.y);
+	aabb2.max.y = (std::max)(aabb2.min.y, aabb2.max.y);
+	aabb2.min.z = (std::min)(aabb2.min.z, aabb2.max.z);
+	aabb2.max.z = (std::max)(aabb2.min.z, aabb2.max.z);
+
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -85,16 +111,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	ImGui::Begin("window");
 
-	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
-	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+
+	ImGui::DragFloat3("aabb1.min", &aabb1.min.x, 0.01f);
+	ImGui::DragFloat3("aabb1.max", &aabb1.max.x, 0.01f);
+
+	ImGui::DragFloat3("aabb2.min", &aabb2.min.x, 0.01f);
+	ImGui::DragFloat3("aabb2.max", &aabb2.max.x, 0.01f);
+
+	// 
+	//ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+	//ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 	//ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
 	//ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 
-	ImGui::DragFloat3("Triangle.v0", &triangle.vertices[0].x, 0.01f);
-	ImGui::DragFloat3("Triangle.v1", &triangle.vertices[1].x, 0.01f);
-	ImGui::DragFloat3("Triangle.v2", &triangle.vertices[2].x, 0.01f);
-	ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
-	ImGui::DragFloat3("Segment.Diff", &segment.diff.x, 0.01f);
+	//ImGui::DragFloat3("Triangle.v0", &triangle.vertices[0].x, 0.01f);
+	//ImGui::DragFloat3("Triangle.v1", &triangle.vertices[1].x, 0.01f);
+	//ImGui::DragFloat3("Triangle.v2", &triangle.vertices[2].x, 0.01f);
+	//ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
+	//ImGui::DragFloat3("Segment.Diff", &segment.diff.x, 0.01f);
 
 
 	//ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
@@ -120,7 +154,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 start = Transform(Transform(segment.origin, worldViewProjectionMatrix), viewportMatrix);
 	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), worldViewProjectionMatrix), viewportMatrix);
 	
-	segment.color = IsCollision3(triangle, segment) ? RED : WHITE;
+	segment.color = IsCollision4(aabb1, aabb2) ? RED : WHITE;
 
 		///
 		/// ↑更新処理ここまで
@@ -135,8 +169,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 	//DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
-	DrawSegment(segment, worldViewProjectionMatrix, viewportMatrix, segment.color);
-	DrawTriangle(triangle, worldViewProjectionMatrix, viewportMatrix, WHITE);
+	//DrawSegment(segment, worldViewProjectionMatrix, viewportMatrix, segment.color);
+	//DrawTriangle(triangle, worldViewProjectionMatrix, viewportMatrix, WHITE);
+	DrawAABB(aabb1, worldViewProjectionMatrix, viewportMatrix, segment.color);
+	DrawAABB(aabb2, worldViewProjectionMatrix, viewportMatrix, WHITE);
 
 
 	//DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);

@@ -53,6 +53,12 @@ struct Triangle
 	Vector3 vertices[3]; //!< 頂点
 };
 
+struct AABB
+{
+	Vector3 min; //!< 最小値
+	Vector3 max; //!< 最大値
+};
+
 //内積
 float Dot(const Vector3& v1, const Vector3& v2)
 {
@@ -524,6 +530,55 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 		int(screenVertices[2].x), int(screenVertices[2].y), color, kFillModeWireFrame);
 };
 
+void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 Vertices[8] =
+	{
+		{aabb.min.x, aabb.min.y, aabb.min.z },
+		{aabb.min.x, aabb.max.y, aabb.min.z },
+		{aabb.min.x, aabb.max.y, aabb.max.z },
+		{aabb.min.x, aabb.min.y, aabb.max.z },
+		{aabb.max.x, aabb.min.y, aabb.min.z },
+		{aabb.max.x, aabb.max.y, aabb.min.z },
+		{aabb.max.x, aabb.max.y, aabb.max.z },
+		{aabb.max.x, aabb.min.y, aabb.max.z },
+	};
+
+	Vector3 screenVertices[8];
+	
+	for (uint32_t index = 0; index < 8;++index)
+	{
+		screenVertices[index] =
+			Transform(Transform(Vertices[index], viewProjectionMatrix), viewportMatrix);
+	}
+
+	// 線を繋いで描画
+	std::pair<uint32_t, uint32_t> indices[12] =
+	{
+		{0,1},
+		{1,2},
+		{2,3},
+		{3,0},
+		{4,5},
+		{5,6},
+		{6,7},
+		{7,4},
+		{0,4},
+		{1,5},
+		{2,6},
+		{3,7},
+	};
+	for (auto& index : indices)
+	{
+		Novice::DrawLine(
+			int(screenVertices[index.first].x), int(screenVertices[index.first].y),
+			int(screenVertices[index.second].x), int(screenVertices[index.second].y), color);
+	}
+	
+
+
+}
+
 int color = WHITE;
 bool IsCollision(const Sphere& sphere, const Plane& plane)
 {
@@ -570,6 +625,7 @@ bool IsCollision3(const Triangle& triangle, const Segment& segment)
 {
 	Vector3 v01 = Subtract(triangle.vertices[1], triangle.vertices[0]);
 	Vector3 v12 = Subtract(triangle.vertices[2], triangle.vertices[1]);
+
 	Vector3 normal = Normalize(Cross(v01, v12));
 	Plane plane{ .normal = normal, .distance = Dot(triangle.vertices[0],normal) };
 	float dot = Dot(plane.normal, segment.diff);
@@ -607,6 +663,19 @@ bool IsCollision3(const Triangle& triangle, const Segment& segment)
 	return true;
 };
 
+bool IsCollision4(const AABB& aabb1, const AABB& aabb2)
+{
+	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && 
+		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && 
+		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
