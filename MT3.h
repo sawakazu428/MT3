@@ -8,6 +8,7 @@
 #define _USE_MATH_DEFINES
 #include <numbers>
 #include <ImGuiManager.h>
+#include "algorithm"
 struct Line
 {
 	Vector3 origin; //!< 始点
@@ -58,6 +59,21 @@ struct AABB
 	Vector3 min; //!< 最小値
 	Vector3 max; //!< 最大値
 };
+
+Vector3& operator-= (Vector3& v1, const Vector3& v2)
+{
+	v1.x -= v2.x;
+	v1.y -= v2.y;
+	v1.z -= v2.z;
+
+	return v1;
+}
+const Vector3 operator-(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 temp(v1);
+	return temp -= v2;
+}
+
 
 //内積
 float Dot(const Vector3& v1, const Vector3& v2)
@@ -668,6 +684,27 @@ bool IsCollision4(const AABB& aabb1, const AABB& aabb2)
 	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && 
 		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && 
 		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IsCollision5(const AABB& aabb, const Sphere& sphere)
+{
+
+	// 最近接点を求める
+	Vector3 closestPoint{ std::clamp(sphere.center.x,aabb.min.x,aabb.max.x),
+		std::clamp(sphere.center.y,aabb.min.y,aabb.max.y) ,
+		std::clamp(sphere.center.z,aabb.min.z,aabb.max.z) };
+
+	// 最近接点と球の中心との距離を求める
+	float distance = Length(closestPoint - sphere.center);
+
+	if (distance <= sphere.radius)
 	{
 		return true;
 	}
