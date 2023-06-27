@@ -714,6 +714,30 @@ bool IsCollision5(const AABB& aabb, const Sphere& sphere)
 	}
 }
 
+bool isCollision6(const AABB& aabb, const Segment& segment)
+{
+	float tNearX = min(aabb.min.x, aabb.max.x);
+	float tNearY = min(aabb.min.y, aabb.max.y);
+	float tNearZ = min(aabb.min.z, aabb.max.z);
+
+	float tFarX = max(segment.kTMin, segment.kTMax);
+	float tFarY = max(segment.kTMin, segment.kTMax);
+	float tFarZ = max(segment.kTMin, segment.kTMax);
+
+	// AABBとの衝突点(貫通点)のtが小さい方
+	float tmin = max(max(tNearX, tNearY), tNearZ);
+	// AABBとの衝突点(貫通点)のtが大きい方
+	float tmax = min(min(tFarX, tFarY), tFarZ);
+	if (tmin <= tmax)
+	{
+		return (Segment::kTMin <= tmin) && (tmax <= Segment::kTMax);;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
 

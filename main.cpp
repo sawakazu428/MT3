@@ -19,8 +19,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char preKeys[256] = {0};
 
 	Segment segment{ 
-		.origin{0.0f,0.5f,-1.0f},
-		.diff{0.0f,0.5f,2.0f}
+		.origin{-0.7f,0.3f,0.0f},
+		.diff{2.0f,-0.5f,0.0f}
 	};
 	Vector3 point{ -0.0f,0.0f,0.0f };
 
@@ -65,6 +65,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vector3 v1{ 1.2f, -3.9f, 2.5f };
 	Vector3 v2{ 2.8f, 0.4f, -1.3f };
+
+	AABB aabb
+	{
+		.min{-0.5f,-0.5f,-0.5f},
+		.max{0.5f,0.5f,0.5f},
+	};
 
 	AABB aabb1
 	{
@@ -114,8 +120,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::Begin("window");
 
 
-	ImGui::DragFloat3("aabb1.min", &aabb1.min.x, 0.01f);
-	ImGui::DragFloat3("aabb1.max", &aabb1.max.x, 0.01f);
+	ImGui::DragFloat3("aabb.min", &aabb.min.x, 0.01f);
+	ImGui::DragFloat3("aabb.max", &aabb.max.x, 0.01f);
 
 	//ImGui::DragFloat3("aabb2.min", &aabb2.min.x, 0.01f);
 	//ImGui::DragFloat3("aabb2.max", &aabb2.max.x, 0.01f);
@@ -123,14 +129,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	 
 	ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 	ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-	ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
-	ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+	//ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+	//ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 
 	//ImGui::DragFloat3("Triangle.v0", &triangle.vertices[0].x, 0.01f);
 	//ImGui::DragFloat3("Triangle.v1", &triangle.vertices[1].x, 0.01f);
 	//ImGui::DragFloat3("Triangle.v2", &triangle.vertices[2].x, 0.01f);
-	//ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
-	//ImGui::DragFloat3("Segment.Diff", &segment.diff.x, 0.01f);
+	ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
+	ImGui::DragFloat3("Segment.Diff", &segment.diff.x, 0.01f);
 
 
 	//ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
@@ -158,7 +164,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 end = Transform(Transform(Add(segment.origin,segment.diff), worldViewProjectionMatrix), viewportMatrix);
 	
 	
-	segment.color = IsCollision5(aabb1, sphere) ? RED : WHITE;
+	segment.color = isCollision6(aabb, segment) ? RED : WHITE;
 	
 
 		///
@@ -174,13 +180,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 	//DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, WHITE);
-	//DrawSegment(segment, worldViewProjectionMatrix, viewportMatrix, segment.color);
+	DrawSegment(segment, worldViewProjectionMatrix, viewportMatrix, WHITE);
 	//DrawTriangle(triangle, worldViewProjectionMatrix, viewportMatrix, WHITE);
-	DrawAABB(aabb1, worldViewProjectionMatrix, viewportMatrix, segment.color);
+	DrawAABB(aabb, worldViewProjectionMatrix, viewportMatrix, segment.color);
 	//DrawAABB(aabb2, worldViewProjectionMatrix, viewportMatrix, WHITE);
 
 
-	DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);
+	//DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix,color);
 
 		///
 		/// ↑描画処理ここまで
