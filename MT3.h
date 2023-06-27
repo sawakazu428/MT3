@@ -720,9 +720,9 @@ bool isCollision6(const AABB& aabb, const Segment& segment)
 	float tNearY = min(aabb.min.y, aabb.max.y);
 	float tNearZ = min(aabb.min.z, aabb.max.z);
 
-	float tFarX = max(segment.kTMin, segment.kTMax);
-	float tFarY = max(segment.kTMin, segment.kTMax);
-	float tFarZ = max(segment.kTMin, segment.kTMax);
+	float tFarX = max(segment.kTMin, segment.kTMin);
+	float tFarY = max(segment.kTMin, segment.kTMin);
+	float tFarZ = max(segment.kTMin, segment.kTMin);
 
 	// AABBとの衝突点(貫通点)のtが小さい方
 	float tmin = max(max(tNearX, tNearY), tNearZ);
@@ -730,7 +730,7 @@ bool isCollision6(const AABB& aabb, const Segment& segment)
 	float tmax = min(min(tFarX, tFarY), tFarZ);
 	if (tmin <= tmax)
 	{
-		return (Segment::kTMin <= tmin) && (tmax <= Segment::kTMax);;
+		return true;
 	}
 	else
 	{
