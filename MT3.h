@@ -716,26 +716,49 @@ bool IsCollision5(const AABB& aabb, const Sphere& sphere)
 
 bool isCollision6(const AABB& aabb, const Segment& segment)
 {
-	float tNearX = min(aabb.min.x, aabb.max.x);
-	float tNearY = min(aabb.min.y, aabb.max.y);
-	float tNearZ = min(aabb.min.z, aabb.max.z);
+	Vector3 mins =
+	{ (aabb.min.x - segment.origin.x) / segment.diff.x,
+	  (aabb.min.y - segment.origin.y) / segment.diff.y,
+	  (aabb.min.z - segment.origin.z) / segment.diff.z
+	};
 
-	float tFarX = max(segment.kTMin, segment.kTMin);
-	float tFarY = max(segment.kTMin, segment.kTMin);
-	float tFarZ = max(segment.kTMin, segment.kTMin);
+	Vector3 maxs =
+	{
+		(aabb.max.x - segment.origin.x) / segment.diff.x,
+		(aabb.max.y - segment.origin.y) / segment.diff.y,
+		(aabb.max.z - segment.origin.z) / segment.diff.z
+	};
 
+	Vector3 tNear =
+	{
+		(std::min)(mins.x,maxs.x),
+		(std::min)(mins.y,maxs.y),
+		(std::min)(mins.z,maxs.z)
+	};
+
+	Vector3 tFar =
+	{
+		(std::max)(mins.x,maxs.x),
+		(std::max)(mins.y,maxs.y),
+		(std::max)(mins.z,maxs.z)
+	};
 	// AABBとの衝突点(貫通点)のtが小さい方
-	float tmin = max(max(tNearX, tNearY), tNearZ);
+	float tMin = (std::max)(tNear.x, (std::max)(tNear.y, tNear.z));
 	// AABBとの衝突点(貫通点)のtが大きい方
-	float tmax = min(min(tFarX, tFarY), tFarZ);
-	if (tmin <= tmax)
+	float tMax = (std::min)(tFar.x, (std::min)(tFar.y, tFar.z));
+	if (tMin <= tMax)
 	{
-		return true;
+		if ((tMin * tMax) < 0.0f)
+		{
+			return true;
+		}
+		if (Segment::kTMin <= tMin && tMin <= Segment::kTMax ||
+			Segment::kTMin <= tMax && tMax <= Segment::kTMax)
+		{
+			return true;
+		}
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 static const int kRowHeight = 20;
